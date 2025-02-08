@@ -12,6 +12,7 @@ import { HomePageBlockListSkeleton } from './_components/BlockList/Grouped/skele
 import { PageTitle } from './_components/PageTitle';
 import { Stats } from './_components/Stats/Stats';
 import HomePageSkeleton from './skeleton';
+import { ActivePoolsTable } from '@/common/components/table/ActivePoolsTable';
 
 const HomePageBlockListDynamic = dynamic(
   () =>
@@ -37,6 +38,7 @@ export function HomePageLayout({
     <>
       {title}
       {stats}
+      <ActivePoolsTable />
       <Grid
         gap="7"
         width="full"
