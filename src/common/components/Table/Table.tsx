@@ -4,7 +4,7 @@ import { Tooltip } from '@/ui/Tooltip';
 import { Table as ChakraTable, Flex, Icon } from '@chakra-ui/react';
 import styled from '@emotion/styled';
 import { ArrowDown, ArrowUp, ArrowsDownUp, Info } from '@phosphor-icons/react';
-import React, { Suspense, useCallback, useState } from 'react';
+import React, { Suspense, useCallback, useMemo, useState } from 'react';
 
 import { ExplorerErrorBoundary } from '../../../app/_components/ErrorBoundary';
 import { TableContainer } from './TableContainer';
@@ -189,9 +189,10 @@ export function TableRow<T extends unknown[]>({
 
 export interface ColumnDefinition<T extends unknown[], R = string> {
   id: string;
+  columnId?: number;
   header: string | React.ReactNode;
   tooltip?: string;
-  accessor: (row: T) => R;
+  accessor?: (row: T) => R;
   sortable?: boolean;
   onSort?: (a: T, b: T, sortOrder: SortOrder | undefined) => number;
   cellRenderer?: (value: R) => React.ReactNode;
@@ -210,12 +211,22 @@ export function Table<T extends unknown[]>({
   topRight,
   topLeft,
   rowData,
-  columnDefinitions,
+  columnDefinitions: rawColumnDefinitions,
 }: TableProps<T>) {
   const [sortColumnId, setSortColumnId] = useState<string | undefined>(undefined);
   const [sortDirection, setSortDirection] = useState<SortOrder | undefined>(undefined);
 
   const [sortedRowData, setSortedRowData] = useState(rowData);
+
+  // Enhance column definitions with auto-assigned columnIds and default accessors
+  const columnDefinitions = useMemo(() => 
+    rawColumnDefinitions.map((col, index) => ({
+      ...col,
+      columnId: col.columnId ?? index,
+      accessor: col.accessor ?? ((row: T) => row[index])
+    })),
+    [rawColumnDefinitions]
+  );
 
   const onSort = useCallback(
     (columnId: string, sortOrder: SortOrder | undefined) => {

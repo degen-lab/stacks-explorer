@@ -2,10 +2,12 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { ColumnDefinition, Table } from './Table';
 
-type ActivePoolsData = [string, string, string, string, string, string, string];
+type TransactionData = [string, string, string, string, string, string, string];
 
-export function ActivePoolsTable() {
-  const rowData: ActivePoolsData[] = useMemo(
+export function TxsTable() {
+    const 
+
+  const rowData: TransactionData[] = useMemo(
     () =>
       Array.from({ length: 10 }, (_, index) => index + 1).map(row => [
         'Xverse',
