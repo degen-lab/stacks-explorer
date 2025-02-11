@@ -136,7 +136,7 @@ export function TableRow<T extends unknown[]>({
   isLast,
 }: {
   rowData: T;
-  columns: ColumnDefinition<T>[];
+  columns: ColumnDefinition<T, keyof T>[];
   rowIndex: number;
   isFirst: boolean;
   isLast: boolean;
@@ -174,28 +174,37 @@ export function TableRow<T extends unknown[]>({
           left={colIndex === 0 ? 0 : undefined}
           zIndex={colIndex === 0 ? 'docked' : undefined}
         >
-          {col.cellRenderer ? (
-            col.cellRenderer(col.accessor(rowData))
-          ) : (
+          {col.cellRenderer && col.accessor ? (
+            col.cellRenderer(col.accessor(rowData), rowData)
+          ) : col.cellRenderer ? (
+            col.cellRenderer('', rowData)
+          ) : col.accessor ? (
             <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
               {col.accessor(rowData)}
             </Text>
-          )}
+          ) : null}
         </ChakraTable.Cell>
       ))}
     </ChakraTable.Row>
   );
 }
 
-export interface ColumnDefinition<T extends unknown[], R = string> {
+/**
+ * Defines the structure of a table column
+ * @template T - The type of the row data object
+ * @template K - The keys/properties available in T (must be valid keys of T)
+ * @template R - The type of the value at T[K], defaults to T[K]
+ */
+export interface ColumnDefinition<T, K extends keyof T, R = T[K]> {
   id: string;
   columnId?: number;
+  dataKey?: K; // The enum key to access the data
   header: string | React.ReactNode;
   tooltip?: string;
   accessor?: (row: T) => R;
   sortable?: boolean;
   onSort?: (a: T, b: T, sortOrder: SortOrder | undefined) => number;
-  cellRenderer?: (value: R) => React.ReactNode;
+  cellRenderer?: (value: R, row: T) => React.ReactNode;
 }
 
 export interface TableProps<T extends unknown[]> {
@@ -203,7 +212,7 @@ export interface TableProps<T extends unknown[]> {
   topRight?: React.ReactNode;
   topLeft?: React.ReactNode;
   rowData: T[];
-  columnDefinitions: ColumnDefinition<T>[];
+  columnDefinitions: ColumnDefinition<T, keyof T>[];
 }
 
 export function Table<T extends unknown[]>({
@@ -219,12 +228,12 @@ export function Table<T extends unknown[]>({
   const [sortedRowData, setSortedRowData] = useState(rowData);
 
   // Enhance column definitions with auto-assigned columnIds and default accessors
-  const columnDefinitions = useMemo(() => 
-    rawColumnDefinitions.map((col, index) => ({
-      ...col,
-      columnId: col.columnId ?? index,
-      accessor: col.accessor ?? ((row: T) => row[index])
-    })),
+  const columnDefinitions = useMemo(
+    () =>
+      rawColumnDefinitions.map((col, index) => ({
+        ...col,
+        columnId: col.columnId ?? index,
+      })),
     [rawColumnDefinitions]
   );
 

@@ -2,23 +2,44 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { ColumnDefinition, Table } from './Table';
 
-type ActivePoolsData = [string, string, string, string, string, string, string];
+// Define your enum and data type
+enum ActivePoolsColumns {
+  Provider = 'provider',
+  PoxAddress = 'poxAddress',
+  Contract = 'contract',
+  RewardsIn = 'rewardsIn',
+  StackersDelegating = 'stackersDelegating',
+  AmountStacked = 'amountStacked',
+  Rewards = 'rewards',
+}
+
+interface ActivePoolsData {
+  [ActivePoolsColumns.Provider]: string;
+  [ActivePoolsColumns.PoxAddress]: string;
+  [ActivePoolsColumns.Contract]: string;
+  [ActivePoolsColumns.RewardsIn]: string;
+  [ActivePoolsColumns.StackersDelegating]: number;
+  [ActivePoolsColumns.AmountStacked]: number;
+  [ActivePoolsColumns.Rewards]: number;
+}
+
+// type ActivePoolsData = [string, string, string, string, string, string, string];
 
 export function ActivePoolsTable() {
   const rowData: ActivePoolsData[] = useMemo(
     () =>
-      Array.from({ length: 10 }, (_, index) => index + 1).map(row => [
-        'Xverse',
-        'bc1q9hquna0...h5edvpgxfjp6d5g',
-        'xverse-pool-btc-v-1-2',
-        '10,426',
-        '118,432,860 STX ($12.3M)',
-        '7.2%',
-        '2,325 BTC',
-      ]),
+      Array.from({ length: 10 }, (_, index) => ({
+        [ActivePoolsColumns.Provider]: 'Xverse',
+        [ActivePoolsColumns.PoxAddress]: 'bc1q9hquna0...h5edvpgxfjp6d5g',
+        [ActivePoolsColumns.Contract]: 'xverse-pool-btc-v-1-2',
+        [ActivePoolsColumns.RewardsIn]: '10,426',
+        [ActivePoolsColumns.StackersDelegating]: 118432860,
+        [ActivePoolsColumns.AmountStacked]: 12300000,
+        [ActivePoolsColumns.Rewards]: 2325,
+      })),
     []
   );
-  const columnDefinitions: ColumnDefinition<ActivePoolsData>[] = useMemo(
+  const columnDefinitions: ColumnDefinition<ActivePoolsData, ActivePoolsColumns>[] = useMemo(
     () => [
       { id: 'Provider', header: 'Provider', sortable: true },
       { id: 'PoX Address', header: 'PoX Address', sortable: false },
@@ -34,7 +55,7 @@ export function ActivePoolsTable() {
         header: 'Amount stacked',
         sortable: true,
       },
-      { id: 'Rewards', header: 'Rewards', accessor: (val: ActivePoolsData) => val[4], sortable: true },
+      { id: 'Rewards', header: 'Rewards', sortable: true },
     ],
     []
   );

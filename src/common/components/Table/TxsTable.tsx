@@ -1,25 +1,30 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { ColumnDefinition, Table } from './Table';
+import { useConfirmedTransactionsInfinite } from '@/common/queries/useConfirmedTransactionsInfinite';
+import { Transaction } from '@stacks/stacks-blockchain-api-types';
+import { useInfiniteQueryResult } from '@/common/hooks/useInfiniteQueryResult';
 
 type TransactionData = [string, string, string, string, string, string, string];
 
 export function TxsTable() {
-    const 
+    const response = useConfirmedTransactionsInfinite();
+    const txs = useInfiniteQueryResult<Transaction>(response, 100); 
 
   const rowData: TransactionData[] = useMemo(
     () =>
-      Array.from({ length: 10 }, (_, index) => index + 1).map(row => [
-        'Xverse',
-        'bc1q9hquna0...h5edvpgxfjp6d5g',
-        'xverse-pool-btc-v-1-2',
-        '10,426',
-        '118,432,860 STX ($12.3M)',
-        '7.2%',
-        '2,325 BTC',
+      txs.map(tx => [
+        tx.tx_id,
+        tx.sender,
+        tx.recipient,
+        tx.amount,
+        tx.fee,
+        tx.block_time,
+        tx.block_time_iso,
       ]),
     []
   );
+  
   const columnDefinitions: ColumnDefinition<ActivePoolsData>[] = useMemo(
     () => [
       { id: 'Provider', header: 'Provider', sortable: true },
