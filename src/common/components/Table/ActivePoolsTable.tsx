@@ -14,7 +14,7 @@ enum ActivePoolsColumns {
 }
 
 interface ActivePoolsData {
-  [ActivePoolsColumns.Provider]: string;
+  [ActivePoolsColumns.Provider]: { functionName: string, contractName: string };
   [ActivePoolsColumns.PoxAddress]: string;
   [ActivePoolsColumns.Contract]: string;
   [ActivePoolsColumns.RewardsIn]: string;
@@ -25,11 +25,11 @@ interface ActivePoolsData {
 
 // type ActivePoolsData = [string, string, string, string, string, string, string];
 
-export function ActivePoolsTable() {
+export async function ActivePoolsTable() {
   const rowData: ActivePoolsData[] = useMemo(
     () =>
       Array.from({ length: 10 }, (_, index) => ({
-        [ActivePoolsColumns.Provider]: 'Xverse' + index,
+        [ActivePoolsColumns.Provider]: { functionName: 'Xverse' + index, contractName: 'Xverse' + index, status: 'Active' },
         [ActivePoolsColumns.PoxAddress]: 'bc1q9hquna0...h5edvpgxfjp6d5g',
         [ActivePoolsColumns.Contract]: 'xverse-pool-btc-v-1-2',
         [ActivePoolsColumns.RewardsIn]: '10,426',
@@ -41,7 +41,7 @@ export function ActivePoolsTable() {
   );
   const columnDefinitions: ColumnDefinition<ActivePoolsData, ActivePoolsColumns>[] = useMemo(
     () => [
-      { id: ActivePoolsColumns.Provider, header: 'Provider', sortable: true, onSort: (a, b) => a.provider.localeCompare(b.provider) },
+      { id: ActivePoolsColumns.Provider, header: 'Provider', sortable: true, onSort: (a, b) => a.provider.localeCompare(b.provider), accessor: (_, row) => value[ActivePoolsColumns.Provider].functionName, cellRenderer: (value: ActivePoolsData) => value[ActivePoolsColumns.Provider].functionName },
       { id: ActivePoolsColumns.PoxAddress, header: 'PoX Address', sortable: false },
       { id: ActivePoolsColumns.Contract, header: 'Contract', sortable: false },
       { id: ActivePoolsColumns.RewardsIn, header: 'Rewards in', sortable: false },

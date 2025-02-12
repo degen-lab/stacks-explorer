@@ -86,6 +86,8 @@ export function TxsTable() {
     const response = useConfirmedTransactionsInfinite();
     const txs = useInfiniteQueryResult<Transaction>(response, 100); 
 
+
+    
   const rowData: TransactionData[] = useMemo(
     () =>
       txs.map(tx => [

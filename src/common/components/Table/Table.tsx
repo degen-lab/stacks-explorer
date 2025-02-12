@@ -286,6 +286,7 @@ export interface TableProps<T extends unknown[]> {
   rowData: T[];
   columnDefinitions: ColumnDefinition<T, keyof T>[];
   bannerRow?: React.ReactNode;
+  suspenseWrapper?: React.ReactNode;
 }
 
 export function Table<T extends unknown[]>({
@@ -295,6 +296,7 @@ export function Table<T extends unknown[]>({
   rowData,
   columnDefinitions: rawColumnDefinitions,
   bannerRow,
+  suspenseWrapper, // TODO: Wait until needed
 }: TableProps<T>) {
   const [sortColumnId, setSortColumnId] = useState<string | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
@@ -330,7 +332,7 @@ export function Table<T extends unknown[]>({
     if (!columnDefinition.onSort) {
       throw new Error(`Column ${sortColumnId} does not have an onSort function`);
     }
-    setSortedRowData(
+    setSortedRowData( // TODO: how to handle server sorting and filtering
       sortOrder
         ? rowData.sort((a, b) => {
             const result = columnDefinition.onSort!(a, b);
@@ -343,7 +345,7 @@ export function Table<T extends unknown[]>({
   return (
     <ExplorerErrorBoundary Wrapper={TableContainer} tryAgainButton>
       <Suspense
-        fallback={
+        fallback={ // TODO: delegate to the table consumer
           <TableSkeleton numColumns={columnDefinitions.length} numRows={rowData.length ?? null} />
         }
       >

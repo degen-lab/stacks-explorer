@@ -1,5 +1,6 @@
 'use client';
 
+import { ActivePoolsTable } from '@/common/components/Table Delete/ActivePoolsTable';
 import { Grid } from '@chakra-ui/react';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
@@ -8,11 +9,8 @@ import { ReactNode } from 'react';
 import { DEFAULT_LIST_LIMIT_SMALL } from '../common/constants/constants';
 import { useGlobalContext } from '../common/context/useGlobalContext';
 import { TxListTabs } from '../features/txs-list/tabs/TxListTabs';
-import { HomePageBlockListSkeleton } from './_components/BlockList/Grouped/skeleton';
 import { PageTitle } from './_components/PageTitle';
 import { Stats } from './_components/Stats/Stats';
-import HomePageSkeleton from './skeleton';
-import { ActivePoolsTable } from '@/common/components/table/ActivePoolsTable';
 
 const HomePageBlockListDynamic = dynamic(
   () =>
