@@ -29,7 +29,7 @@ export function ActivePoolsTable() {
   const rowData: ActivePoolsData[] = useMemo(
     () =>
       Array.from({ length: 10 }, (_, index) => ({
-        [ActivePoolsColumns.Provider]: 'Xverse',
+        [ActivePoolsColumns.Provider]: 'Xverse' + index,
         [ActivePoolsColumns.PoxAddress]: 'bc1q9hquna0...h5edvpgxfjp6d5g',
         [ActivePoolsColumns.Contract]: 'xverse-pool-btc-v-1-2',
         [ActivePoolsColumns.RewardsIn]: '10,426',
@@ -41,21 +41,21 @@ export function ActivePoolsTable() {
   );
   const columnDefinitions: ColumnDefinition<ActivePoolsData, ActivePoolsColumns>[] = useMemo(
     () => [
-      { id: 'Provider', header: 'Provider', sortable: true },
-      { id: 'PoX Address', header: 'PoX Address', sortable: false },
-      { id: 'Contract', header: 'Contract', sortable: false },
-      { id: 'Rewards in', header: 'Rewards in', sortable: false },
+      { id: ActivePoolsColumns.Provider, header: 'Provider', sortable: true, onSort: (a, b) => a.provider.localeCompare(b.provider) },
+      { id: ActivePoolsColumns.PoxAddress, header: 'PoX Address', sortable: false },
+      { id: ActivePoolsColumns.Contract, header: 'Contract', sortable: false },
+      { id: ActivePoolsColumns.RewardsIn, header: 'Rewards in', sortable: false },
       {
-        id: 'Stackers delegating',
+        id: ActivePoolsColumns.StackersDelegating,
         header: 'Stackers delegating',
         sortable: true,
       },
       {
-        id: 'Amount stacked',
+        id: ActivePoolsColumns.AmountStacked,
         header: 'Amount stacked',
         sortable: true,
       },
-      { id: 'Rewards', header: 'Rewards', sortable: true },
+      { id: ActivePoolsColumns.Rewards, header: 'Rewards', sortable: true },
     ],
     []
   );

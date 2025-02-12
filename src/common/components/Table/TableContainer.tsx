@@ -62,7 +62,7 @@ export function TableContainer({
   return (
     <Stack gap={7} w="full">
       <Toolbar topLeft={topLeft} topRight={topRight} title={title} />
-      <Card h="fit-content" w="full" px={6} {...rest}>
+      <Card h="fit-content" w="full" p={4} {...rest}>
         <Box position={'relative'}>{children}</Box>
       </Card>
     </Stack>
