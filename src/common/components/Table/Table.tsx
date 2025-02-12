@@ -2,33 +2,30 @@ import { ScrollableBox } from '@/app/_components/BlockList/ScrollableDiv';
 import { Text } from '@/ui/Text';
 import { Tooltip } from '@/ui/Tooltip';
 import { Table as ChakraTable, Flex, Icon } from '@chakra-ui/react';
-import styled from '@emotion/styled';
 import { ArrowDown, ArrowUp, ArrowsDownUp, Info } from '@phosphor-icons/react';
-import React, { Suspense, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ExplorerErrorBoundary } from '../../../app/_components/ErrorBoundary';
 import { TableContainer } from './TableContainer';
-import { TableScrollIndicatorWrapper } from './TableScrollIndicatorWrapper';
-import { TableSkeleton } from './TableSkeleton';
+import { ScrollIndicatorWrapper } from './TableScrollIndicatorWrapper';
 
-export const mobileBorderCss = {
+const fixedFirstColumnCss = {
   '.has-horizontal-scroll &:before': {
-    // Adds a border to the left of the first column
     content: '""',
     position: 'absolute',
     right: 0,
     top: 0,
     width: '2px',
-    height: 'var(--stacks-sizes-14)', // full // TODO: not good to use a fixed height
-    backgroundColor: 'borderPrimary', // bg: 'surface'
+    height: 'full',
+    backgroundColor: 'newBorderPrimary',
+  },
+  '&': {
+    position: 'sticky',
+    left: 0,
+    zIndex: 'docked',
+    bg: 'surface',
   },
 };
-
-const StyledTable = styled(ChakraTable.Root)`
-  tr td {
-    border-bottom: none;
-  }
-`;
 
 type SortOrder = 'asc' | 'desc';
 
@@ -84,103 +81,95 @@ function SortIcon({
   );
 }
 
-export const TableHeader = <T extends unknown[]>({
+export function TableHeader<T>({
   columnDefinition,
   sortColumn,
   sortOrder,
   headerTitle,
-  isFirst,
+  columnIndex,
   setSortColumnId,
   setSortOrder,
 }: {
   sortColumn?: string | null;
   sortOrder?: SortOrder;
-  columnDefinition: EnhancedColumnDefinition<T>;
-  headerTitle: string | React.ReactNode;
-  isFirst: boolean;
+  columnDefinition: ColumnDefinition<T, keyof T>;
+  headerTitle: string;
+  columnIndex: number;
   setSortColumnId: (columnId: string) => void;
   setSortOrder: (sortOrder: SortOrder | undefined) => void;
-}) => {
+}) {
+  const isFirstColumn = columnIndex === 0;
   return (
     <ChakraTable.ColumnHeader
       py={3}
       px={6}
       border="none"
-      css={isFirst ? mobileBorderCss : {}}
-      width="fit-content"
-      position={isFirst ? 'sticky' : 'unset'}
-      left={isFirst ? 0 : undefined}
-      zIndex={isFirst ? 'docked' : undefined}
-      bg="surface"
       borderBottom="1px solid var(--stacks-colors-surface-secondary)"
+      css={isFirstColumn ? fixedFirstColumnCss : {}}
+      width="fit-content"
       role="columnheader"
       aria-sort={sortOrder ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
     >
-      {typeof headerTitle === 'string' ? ( // TODO: why not also use a custom renderer
-        <Flex
-          gap={1.5}
-          alignItems="center"
-          py={1}
-          pl={1}
-          pr={1.5}
-          _hover={{
-            bg: 'surfaceSecondary',
+      <Flex
+        w="fit-content"
+        gap={1.5}
+        alignItems="center"
+        py={1}
+        pl={1}
+        pr={1.5}
+        _hover={{
+          bg: 'surfaceSecondary',
+        }}
+        borderRadius="redesign.md"
+        className="column-header-content"
+      >
+        <Text
+          fontWeight="medium"
+          whiteSpace="nowrap"
+          fontSize="sm"
+          color={{
+            _light: 'slate.700',
+            _dark: 'slate.250',
           }}
-          borderRadius="redesign.md"
-          className="group"
-        >
-          <Text
-            fontWeight="medium"
-            whiteSpace="nowrap"
-            fontSize="sm"
-            color={{
-              _light: 'slate.700',
-              _dark: 'slate.250',
-            }}
-            textTransform="none"
-            letterSpacing="normal"
-            fontFamily="instrument"
-            _groupHover={{
+          textTransform="none"
+          letterSpacing="normal"
+          fontFamily="instrument"
+          css={{
+            '& .column-header-content:hover': {
               color: 'textPrimary',
-            }}
-          >
-            {headerTitle}
-          </Text>
-          {columnDefinition.tooltip && (
-            <Tooltip content={columnDefinition.tooltip}>
-              <Icon h={4} w={4}>
-                <Info />
-              </Icon>
-            </Tooltip>
-          )}
-          <SortIcon
-            sortable={columnDefinition.sortable}
-            sortColumn={sortColumn}
-            columnId={columnDefinition.id}
-            sortOrder={sortOrder}
-            setSortColumnId={setSortColumnId}
-            setSortOrder={setSortOrder}
-          />
-        </Flex>
-      ) : (
-        headerTitle
-      )}
+            },
+          }}
+        >
+          {headerTitle}
+        </Text>
+        {columnDefinition.tooltip && (
+          <Tooltip content={columnDefinition.tooltip}>
+            <Icon h={4} w={4} color="iconSecondary">
+              <Info />
+            </Icon>
+          </Tooltip>
+        )}
+        <SortIcon
+          sortable={!!columnDefinition.onSort}
+          sortColumn={sortColumn}
+          columnId={columnDefinition.id}
+          sortOrder={sortOrder}
+          setSortColumnId={setSortColumnId}
+          setSortOrder={setSortOrder}
+        />
+      </Flex>
     </ChakraTable.ColumnHeader>
   );
-};
+}
 
-export function TableRow<T extends unknown[]>({
+export function TableRow<T>({
   rowData,
-  columns,
+  columnDefinitions,
   rowIndex,
-  isFirst,
-  isLast,
 }: {
   rowData: T;
-  columns: EnhancedColumnDefinition<T>[];
+  columnDefinitions: ColumnDefinition<T, keyof T>[];
   rowIndex: number;
-  isFirst: boolean;
-  isLast: boolean;
 }) {
   return (
     <ChakraTable.Row
@@ -194,46 +183,39 @@ export function TableRow<T extends unknown[]>({
           borderBottomRightRadius: 'redesign.md',
         },
       }}
-      _hover={{
-        bg: 'surfacePrimary',
-      }}
       className="group"
     >
-      {columns.map((col, colIndex) => (
-        <ChakraTable.Cell
-          key={`table-row-${rowIndex}-col-${colIndex}`}
-          py={4}
-          px={6}
-          css={{
-            ...(colIndex === 0
-              ? {
-                  ...mobileBorderCss,
-                  '&:hover': {
-                    backgroundColor: 'inherit',
-                  },
-                  backgroundColor: 'surface',
-                }
-              : {}),
-          }}
-          position={colIndex === 0 ? 'sticky' : 'unset'}
-          left={colIndex === 0 ? 0 : undefined}
-          zIndex={colIndex === 0 ? 'docked' : undefined}
-          _groupHover={{
-            bg: 'surfacePrimary',
-          }}
-        >
-          {col.cellRenderer ? (
-            col.cellRenderer(col.accessor(rowData), rowData)
-          ) : (
-            <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
-              {String(col.accessor(rowData))} {/* TODO: fix type */}
-            </Text>
-          )}
-        </ChakraTable.Cell>
-      ))}
+      {columnDefinitions.map((colDef, colIndex) => {
+        const isFirstColumn = colIndex === 0;
+        return (
+          <ChakraTable.Cell
+            key={`table-row-${rowIndex}-col-${colIndex}`}
+            py={4}
+            px={6}
+            css={{
+              ...(isFirstColumn
+                ? {
+                    ...fixedFirstColumnCss,
+                    '&:hover': {
+                      backgroundColor: 'inherit',
+                    },
+                    backgroundColor: 'surface',
+                  }
+                : {}),
+            }}
+            _groupHover={{
+              bg: 'surfacePrimary',
+            }}
+          >
+            {colDef.cellRenderer(colDef.accessor(rowData), rowData)}
+          </ChakraTable.Cell>
+        );
+      })}
     </ChakraTable.Row>
   );
 }
+
+export type CellRenderer<T, R> = (value: R | undefined, row: T) => React.ReactNode;
 
 /**
  * Defines the structure of a table column
@@ -248,74 +230,54 @@ export function TableRow<T extends unknown[]>({
  * id is a unique string identifier for the column
  * columnId is a numeric index, useful for maintaining column order and optimizing rendering - This separation allows for both human-readable identifiers and efficient internal operations.
  * cellRenderer handles the visual presentation of the data - Decouples data transformation (accessor) from presentation logic - Enables custom components, formatting, or interactive elements within cells
+ * Why have an accessor vs just using the cellrender?
+ * Accessor:
+ * Handles data transformation/extraction
+ * Returns the raw data value
+ * Used for sorting operations
+ * Can be reused across different cell renderers
+ * Keeps business logic separate from presentation
+ * CellRenderer:
+ * Handles only the presentation/UI
+ * Takes the processed data from accessor and renders it
+ * Can include formatting, styling, and interactive elements
+ * Focuses purely on how to display the data
  */
 export interface ColumnDefinition<T, K extends keyof T, R = T[K]> {
   id: string;
-  columnId?: number;
-  dataKey?: K; // The enum key to access the data
-  header: string | React.ReactNode;
+  header: string;
   tooltip?: string;
-  accessor?: (row: T) => R;
-  sortable?: boolean;
+  accessor: (row: T) => R;
   onSort?: (a: T, b: T) => number;
-  cellRenderer?: (value: R | undefined, row: T) => React.ReactNode;
+  cellRenderer: CellRenderer<T, R>;
 }
 
-/**
- * Enhanced version of ColumnDefinition that ensures required properties are present
- * @template T - The type of a row in the table data (e.g., { id: number, name: string })
- *
- * Type parameters in the extended ColumnDefinition:
- * - T: The row data type (same as above)
- * - keyof T: Union type of all property names in T (e.g., "id" | "name")
- * - T[keyof T]: Union type of all possible value types in T (e.g., number | string)
- *
- * This interface ensures:
- * - columnId is required (not optional like in base ColumnDefinition)
- * - accessor is required and properly typed to return a value from the row
- */
-export interface EnhancedColumnDefinition<T> extends ColumnDefinition<T, keyof T, T[keyof T]> {
-  columnId: number;
-  accessor: (row: T) => T[keyof T];
-}
-
-export interface TableProps<T extends unknown[]> {
-  title?: string;
-  topRight?: React.ReactNode;
-  topLeft?: React.ReactNode;
+export interface TableProps<T> {
   rowData: T[];
   columnDefinitions: ColumnDefinition<T, keyof T>[];
-  bannerRow?: React.ReactNode;
-  suspenseWrapper?: React.ReactNode;
+  onSort?: (columnId: string, sortOrder: SortOrder | undefined) => Promise<T[]>;
+  isLoading?: boolean;
+  suspenseWrapper?: (table: React.ReactNode) => React.ReactNode;
+  tableContainerWrapper?: (table: React.ReactNode) => React.ReactNode;
+  hasFixedFirstColumn?: boolean;
+  hasScrollIndicator?: boolean;
+  bannerRow?: React.ReactElement<typeof ChakraTable.Row>;
 }
 
-export function Table<T extends unknown[]>({
-  title,
-  topRight,
-  topLeft,
+export function Table<T>({
   rowData,
-  columnDefinitions: rawColumnDefinitions,
+  columnDefinitions,
   bannerRow,
-  suspenseWrapper, // TODO: Wait until needed
+  hasScrollIndicator,
+  hasFixedFirstColumn,
+  tableContainerWrapper,
+  suspenseWrapper,
+  onSort, // For server-side sorting
+  isLoading,
 }: TableProps<T>) {
   const [sortColumnId, setSortColumnId] = useState<string | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
   const [sortedRowData, setSortedRowData] = useState(rowData);
-
-  // Enhance column definitions. Auto-assigning columnIds and default accessors
-  const columnDefinitions: EnhancedColumnDefinition<T>[] = useMemo(
-    () =>
-      rawColumnDefinitions.map((colDef, index) => ({
-        ...colDef,
-        columnId: index,
-        accessor: colDef.accessor
-          ? colDef.accessor
-          : colDef.dataKey
-            ? (row: T) => row[colDef.dataKey as keyof T]
-            : (row: T) => row[colDef.id as keyof T],
-      })),
-    [rawColumnDefinitions]
-  );
 
   // Handles table sorting when sort column or order changes.
   useEffect(() => {
@@ -326,69 +288,83 @@ export function Table<T extends unknown[]>({
     if (!columnDefinition) {
       throw new Error(`Column definition not found for columnId: ${sortColumnId}`);
     }
-    if (!columnDefinition.sortable) {
-      throw new Error(`Column ${sortColumnId} is not sortable`);
+    if (onSort) {
+      // Let the parent component handle the loading state and data updates
+      onSort(sortColumnId, sortOrder).then(setSortedRowData);
+    } else {
+      if (!columnDefinition.onSort) {
+        throw new Error(`Column ${sortColumnId} does not have an onSort function`);
+      }
+      setSortedRowData(
+        // TODO: how to handle server sorting and filtering
+        sortOrder
+          ? rowData.sort((a, b) => {
+              const result = columnDefinition.onSort!(a, b);
+              return sortOrder === 'asc' ? result : -result;
+            })
+          : rowData
+      );
     }
-    if (!columnDefinition.onSort) {
-      throw new Error(`Column ${sortColumnId} does not have an onSort function`);
-    }
-    setSortedRowData( // TODO: how to handle server sorting and filtering
-      sortOrder
-        ? rowData.sort((a, b) => {
-            const result = columnDefinition.onSort!(a, b);
-            return sortOrder === 'asc' ? result : -result;
-          })
-        : rowData
-    );
-  }, [sortColumnId, sortOrder, rowData, columnDefinitions]);
+  }, [sortColumnId, sortOrder, rowData, columnDefinitions, onSort]);
+
+  let content: React.ReactNode = (
+    <ChakraTable.Root
+      width="full"
+      css={{
+        '& td': {
+          borderBottom: 'none',
+        },
+      }}
+    >
+      <ChakraTable.Header>
+        <ChakraTable.Row>
+          {columnDefinitions?.map((col, colIndex) => (
+            <TableHeader
+              key={col.id}
+              columnDefinition={col}
+              headerTitle={col.header}
+              sortColumn={sortColumnId}
+              sortOrder={sortOrder}
+              setSortColumnId={setSortColumnId}
+              setSortOrder={setSortOrder}
+              columnIndex={colIndex}
+            />
+          ))}
+        </ChakraTable.Row>
+      </ChakraTable.Header>
+      <ChakraTable.Body>
+        {bannerRow}
+        {sortedRowData?.map((rowData, rowIndex) => (
+          <TableRow
+            key={rowIndex}
+            rowIndex={rowIndex}
+            rowData={rowData}
+            columnDefinitions={columnDefinitions}
+          />
+        ))}
+      </ChakraTable.Body>
+    </ChakraTable.Root>
+  );
+
+  if (hasScrollIndicator) {
+    content = <ScrollIndicatorWrapper>{content}</ScrollIndicatorWrapper>;
+  }
+
+  if (hasFixedFirstColumn) {
+    content = <ScrollableBox>{content}</ScrollableBox>;
+  }
+
+  if (tableContainerWrapper) {
+    content = tableContainerWrapper(content);
+  }
+
+  if (suspenseWrapper) {
+    content = suspenseWrapper(content);
+  }
 
   return (
     <ExplorerErrorBoundary Wrapper={TableContainer} tryAgainButton>
-      <Suspense
-        fallback={ // TODO: delegate to the table consumer
-          <TableSkeleton numColumns={columnDefinitions.length} numRows={rowData.length ?? null} />
-        }
-      >
-        {/* <TableProvider initialData={data}> */}
-        <TableContainer topRight={topRight} topLeft={topLeft} title={title}>
-          <ScrollableBox>
-            <TableScrollIndicatorWrapper>
-              <StyledTable width="full">
-                <ChakraTable.Header>
-                  <ChakraTable.Row>
-                    {columnDefinitions?.map((col, colIndex) => (
-                      <TableHeader
-                        key={col.id}
-                        columnDefinition={col}
-                        headerTitle={col.header}
-                        sortColumn={sortColumnId}
-                        sortOrder={sortOrder}
-                        isFirst={colIndex === 0}
-                        setSortColumnId={setSortColumnId}
-                        setSortOrder={setSortOrder}
-                      />
-                    ))}
-                  </ChakraTable.Row>
-                </ChakraTable.Header>
-                <ChakraTable.Body>
-                  {bannerRow}
-                  {sortedRowData?.map((rowData, rowIndex) => (
-                    <TableRow
-                      key={rowIndex}
-                      rowIndex={rowIndex}
-                      rowData={rowData}
-                      columns={columnDefinitions}
-                      isFirst={rowIndex === 0}
-                      isLast={rowIndex === sortedRowData.length - 1}
-                    />
-                  ))}
-                </ChakraTable.Body>
-              </StyledTable>
-            </TableScrollIndicatorWrapper>
-          </ScrollableBox>
-        </TableContainer>
-        {/* </TableProvider> */}
-      </Suspense>
+      {content}
     </ExplorerErrorBoundary>
   );
 }

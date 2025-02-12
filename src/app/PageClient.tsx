@@ -1,6 +1,6 @@
 'use client';
 
-import { ActivePoolsTable } from '@/common/components/Table Delete/ActivePoolsTable';
+import { ActivePoolsTable } from '@/common/components/table/ActivePoolsTable';
 import { Grid } from '@chakra-ui/react';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';

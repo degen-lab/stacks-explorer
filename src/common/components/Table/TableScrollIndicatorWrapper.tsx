@@ -2,10 +2,7 @@ import { Box, BoxProps, Flex, Icon } from '@chakra-ui/react';
 import { CaretRight } from '@phosphor-icons/react';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 
-export function TableScrollIndicatorWrapper({
-  children,
-  ...rest
-}: BoxProps & { children: ReactNode }) {
+export function ScrollIndicatorWrapper({ children, ...rest }: BoxProps & { children: ReactNode }) {
   const [hasHorizontalScroll, setHasHorizontalScroll] = useState(false);
   const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
   const divRef = useRef<HTMLDivElement | null>(null);
@@ -45,17 +42,20 @@ export function TableScrollIndicatorWrapper({
         ref={divRef}
         overflowX={'auto'}
         overflowY={'hidden'}
-        className={hasHorizontalScroll ? 'scrollableBox has-horizontal-scroll' : 'scrollableBox'}
+        className={
+          hasHorizontalScroll
+            ? 'scroll-indicator-wrapper has-horizontal-scroll'
+            : 'scroll-indicator-wrapper'
+        }
         {...rest}
       >
         {children}
       </Box>
       {hasHorizontalScroll && !isScrolledToEnd && (
-        <Flex position="absolute" right={0} top={0}h="full" className="scroll-indicator-wrapper">
+        <Flex position="absolute" right={0} top={0} h="full" className="scroll-indicator">
           <Box w={2} h="full" bg="surface"></Box>
           <Flex
             position="relative"
-            // right={0}
             top="50%"
             transform="translateY(-50%)"
             bg="surfacePrimary"

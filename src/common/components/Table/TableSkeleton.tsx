@@ -1,4 +1,4 @@
-import { Skeleton} from '@/components/ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useMemo } from 'react';
 
 import { ColumnDefinition, Table } from './Table';

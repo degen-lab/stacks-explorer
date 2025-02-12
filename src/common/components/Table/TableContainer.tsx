@@ -56,9 +56,6 @@ export function TableContainer({
   children,
   ...rest
 }: TableContainerProps) {
-  if (title === 'Blocks') {
-    throw new Error('Blocks table is not implemented');
-  }
   return (
     <Stack gap={7} w="full">
       <Toolbar topLeft={topLeft} topRight={topRight} title={title} />

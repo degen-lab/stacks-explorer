@@ -1,8 +1,11 @@
-import { useCallback, useMemo, useState } from 'react';
+import { Text } from '@/ui/Text';
+import { Table as ChakraTable, Flex, Icon } from '@chakra-ui/react';
+import { ArrowsClockwise } from '@phosphor-icons/react';
+import { useMemo } from 'react';
 
-import { ColumnDefinition, Table } from './Table';
+import { CellRenderer, ColumnDefinition, Table } from './Table';
+import { TableContainer } from './TableContainer';
 
-// Define your enum and data type
 enum ActivePoolsColumns {
   Provider = 'provider',
   PoxAddress = 'poxAddress',
@@ -14,7 +17,7 @@ enum ActivePoolsColumns {
 }
 
 interface ActivePoolsData {
-  [ActivePoolsColumns.Provider]: { functionName: string, contractName: string };
+  [ActivePoolsColumns.Provider]: string;
   [ActivePoolsColumns.PoxAddress]: string;
   [ActivePoolsColumns.Contract]: string;
   [ActivePoolsColumns.RewardsIn]: string;
@@ -23,59 +26,127 @@ interface ActivePoolsData {
   [ActivePoolsColumns.Rewards]: number;
 }
 
-// type ActivePoolsData = [string, string, string, string, string, string, string];
-
-export async function ActivePoolsTable() {
-  const rowData: ActivePoolsData[] = useMemo(
-    () =>
-      Array.from({ length: 10 }, (_, index) => ({
-        [ActivePoolsColumns.Provider]: { functionName: 'Xverse' + index, contractName: 'Xverse' + index, status: 'Active' },
-        [ActivePoolsColumns.PoxAddress]: 'bc1q9hquna0...h5edvpgxfjp6d5g',
-        [ActivePoolsColumns.Contract]: 'xverse-pool-btc-v-1-2',
-        [ActivePoolsColumns.RewardsIn]: '10,426',
-        [ActivePoolsColumns.StackersDelegating]: 118432860,
-        [ActivePoolsColumns.AmountStacked]: 12300000,
-        [ActivePoolsColumns.Rewards]: 2325,
-      })),
-    []
+const defaultCellRenderer: CellRenderer<ActivePoolsData, string | number> = (
+  value: string | number | undefined
+) => {
+  return (
+    <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
+      {String(value)}
+    </Text>
   );
+};
+
+export function UpdateTableBannerRow() {
+  const numColumns = Object.keys(ActivePoolsColumns).length;
+
+  return (
+    <ChakraTable.Row
+      css={{
+        '& > td:first-of-type': {
+          borderTopLeftRadius: 'redesign.md',
+          borderBottomLeftRadius: 'redesign.md',
+        },
+        '& > td:last-of-type': {
+          borderTopRightRadius: 'redesign.md',
+          borderBottomRightRadius: 'redesign.md',
+        },
+      }}
+    >
+      <ChakraTable.Cell colSpan={numColumns} py={2} px={1}>
+        <Flex
+          alignItems="center"
+          justifyContent="center"
+          gap={1.5}
+          boxShadow="0px 4px 12px 0px color(display-p3 0.9882 0.3922 0.1961 / 0.25), 0px 4px 12px 0px rgba(255, 85, 18, 0.25)"
+          border="1px dashed var(--stacks-colors-accent-stacks-500)"
+          borderRadius="redesign.lg"
+          h={12}
+        >
+          <Text fontSize="sm" fontWeight="medium" color="textSecondary">
+            New transactions have come in. Update list
+          </Text>
+          <Icon h={3.5} w={3.5} color="iconTertiary">
+            <ArrowsClockwise />
+          </Icon>
+        </Flex>
+      </ChakraTable.Cell>
+    </ChakraTable.Row>
+  );
+}
+
+export function ActivePoolsTable() {
+  const rowData: ActivePoolsData[] = useMemo(() => {
+    const data: ActivePoolsData[] = Array.from({ length: 10 }, (_, index) => ({
+      [ActivePoolsColumns.Provider]: 'Xverse' + index,
+      [ActivePoolsColumns.PoxAddress]: 'bc1q9hquna0...h5edvpgxfjp6d5g',
+      [ActivePoolsColumns.Contract]: 'xverse-pool-btc-v-1-2',
+      [ActivePoolsColumns.RewardsIn]: '10,426',
+      [ActivePoolsColumns.StackersDelegating]: 118432860,
+      [ActivePoolsColumns.AmountStacked]: 12300000,
+      [ActivePoolsColumns.Rewards]: 2325,
+    }));
+    return data;
+  }, []);
+
   const columnDefinitions: ColumnDefinition<ActivePoolsData, ActivePoolsColumns>[] = useMemo(
     () => [
-      { id: ActivePoolsColumns.Provider, header: 'Provider', sortable: true, onSort: (a, b) => a.provider.localeCompare(b.provider), accessor: (_, row) => value[ActivePoolsColumns.Provider].functionName, cellRenderer: (value: ActivePoolsData) => value[ActivePoolsColumns.Provider].functionName },
-      { id: ActivePoolsColumns.PoxAddress, header: 'PoX Address', sortable: false },
-      { id: ActivePoolsColumns.Contract, header: 'Contract', sortable: false },
-      { id: ActivePoolsColumns.RewardsIn, header: 'Rewards in', sortable: false },
+      {
+        id: ActivePoolsColumns.Provider,
+        header: 'Provider',
+        onSort: (a, b) => a.provider.localeCompare(b.provider),
+        accessor: row => row[ActivePoolsColumns.Provider],
+        cellRenderer: defaultCellRenderer,
+      },
+      {
+        id: ActivePoolsColumns.PoxAddress,
+        header: 'PoX Address',
+        accessor: row => row[ActivePoolsColumns.PoxAddress],
+        cellRenderer: defaultCellRenderer,
+      },
+      {
+        id: ActivePoolsColumns.Contract,
+        header: 'Contract',
+        accessor: row => row[ActivePoolsColumns.Contract],
+        cellRenderer: defaultCellRenderer,
+      },
+      {
+        id: ActivePoolsColumns.RewardsIn,
+        header: 'Rewards in',
+        accessor: row => row[ActivePoolsColumns.RewardsIn],
+        cellRenderer: defaultCellRenderer,
+      },
       {
         id: ActivePoolsColumns.StackersDelegating,
         header: 'Stackers delegating',
-        sortable: true,
+        accessor: row => row[ActivePoolsColumns.StackersDelegating],
+        cellRenderer: defaultCellRenderer,
       },
       {
         id: ActivePoolsColumns.AmountStacked,
         header: 'Amount stacked',
-        sortable: true,
+        accessor: row => row[ActivePoolsColumns.AmountStacked],
+        cellRenderer: defaultCellRenderer,
       },
-      { id: ActivePoolsColumns.Rewards, header: 'Rewards', sortable: true },
+      {
+        id: ActivePoolsColumns.Rewards,
+        header: 'Rewards',
+        accessor: row => row[ActivePoolsColumns.Rewards],
+        cellRenderer: defaultCellRenderer,
+      },
     ],
     []
   );
 
-  const [sortColumn, setSortColumn] = useState<null | string>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const onSort = useCallback((columnId: string, newSortDirection: 'asc' | 'desc') => {
-    setSortColumn(columnId);
-    setSortDirection(newSortDirection);
-  }, []);
-
   return (
-    <Table
-      title="Active Pools"
-      topRight={null}
+    <Table<ActivePoolsData>
       rowData={rowData}
       columnDefinitions={columnDefinitions}
-      onSort={onSort}
-      sortColumn={sortColumn}
-      sortDirection={sortDirection}
+      hasScrollIndicator
+      hasFixedFirstColumn
+      tableContainerWrapper={table => (
+        <TableContainer title={'Active Pools'}>{table}</TableContainer>
+      )}
+      bannerRow={<UpdateTableBannerRow />}
     />
   );
 }
