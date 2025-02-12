@@ -1,6 +1,6 @@
 'use client';
 
-import { ActivePoolsTable } from '@/common/components/table/ActivePoolsTable';
+import { TxsTable } from '@/common/components/table/TxsTable';
 import { Grid } from '@chakra-ui/react';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
@@ -36,7 +36,8 @@ export function HomePageLayout({
     <>
       {title}
       {stats}
-      <ActivePoolsTable />
+      {/* <ActivePoolsTable /> */}
+      <TxsTable />
       <Grid
         gap="7"
         width="full"

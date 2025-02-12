@@ -6,6 +6,8 @@ import { useMemo } from 'react';
 import { Transaction } from '@stacks/stacks-blockchain-api-types';
 
 import { CellRenderer, ColumnDefinition, Table } from './Table';
+import { TableContainer } from './TableContainer';
+import { truncateMiddle } from '@/common/utils/utils';
 
 enum TxTableColumns {
   Transaction = 'transaction',
@@ -13,9 +15,9 @@ enum TxTableColumns {
   TxType = 'txType',
   From = 'from',
   To = 'to',
-  Fee = 'fee',
   BlockTime = 'blockTime',
   Amount = 'blockTimeIso',
+  Fee = 'feeRate',
 }
 
 interface TxTableData {
@@ -25,8 +27,8 @@ interface TxTableData {
   [TxTableColumns.From]: string;
   [TxTableColumns.To]: string;
   [TxTableColumns.Fee]: string;
-  [TxTableColumns.BlockTime]: string;
-  [TxTableColumns.Amount]: string;
+  [TxTableColumns.BlockTime]: number;
+  [TxTableColumns.Amount]: number;
 }
 
 const defaultCellRenderer: CellRenderer<TxTableData, string | number> = (
@@ -39,60 +41,114 @@ const defaultCellRenderer: CellRenderer<TxTableData, string | number> = (
   );
 };
 
-function getFromAddress(tx: Transaction): string {
+function getToAddress(tx: Transaction): string {
   if (tx.tx_type === 'token_transfer') {
     return tx.token_transfer?.recipient_address;
   }
-  return tx.sender_address;
+  if (tx.tx_type === 'smart_contract') {
+    return tx.smart_contract?.contract_id;
+  }
+  if (tx.tx_type === 'contract_call') {
+    return tx.contract_call?.contract_id;
+  }
+  if (tx.tx_type === 'coinbase') {
+    return tx.coinbase_payload?.alt_recipient ?? '';
+  }
+  return '';
+}
+
+function getAmount(tx: Transaction): number {
+  if (tx.tx_type === 'token_transfer') {
+    return Number(tx.token_transfer?.amount);
+  }
+  return 0;
 }
 
 export function TxsTable() {
   const response = useConfirmedTransactionsInfinite();
   const txs = useInfiniteQueryResult<Transaction>(response, 100);
+  console.log({txs});
 
   const rowData: TxTableData[] = useMemo(
     () =>
       txs.map(tx => {
-        const from = getFromAddress(tx);
+        const to = getToAddress(tx);
+        const amount = getAmount(tx);
         return {
+          [TxTableColumns.Transaction]: 'N/A',
           [TxTableColumns.TxId]: tx.tx_id,
-          [TxTableColumns.Transaction]: tx.tx_id,
-          [TxTableColumns.From]: tx.sender_address,
-          [TxTableColumns.To]: tx.token_transfer?.recipient_address,
           [TxTableColumns.TxType]: tx.tx_type,
+          [TxTableColumns.From]: tx.sender_address,
+          [TxTableColumns.To]: to,
           [TxTableColumns.Fee]: tx.fee_rate,
+          [TxTableColumns.Amount]: amount,
           [TxTableColumns.BlockTime]: tx.block_time,
-          [TxTableColumns.Amount]: tx.amount,
         };
       }),
-    []
+    [txs]
   );
 
   const columnDefinitions: ColumnDefinition<TxTableData, TxTableColumns>[] = useMemo(
     () => [
-      { id: TxTableColumns.Transaction, header: 'Transaction', cellRenderer: defaultCellRenderer },
-      { id: TxTableColumns.TxId, header: 'Tx Id', cellRenderer: defaultCellRenderer },
-      { id: TxTableColumns.TxType, header: 'Tx Type', cellRenderer: defaultCellRenderer },
+      {
+        id: TxTableColumns.Transaction,
+        header: 'Transaction',
+        accessor: (row: TxTableData) => row[TxTableColumns.Transaction],
+        cellRenderer: defaultCellRenderer,
+      },
+      {
+        id: TxTableColumns.TxId,
+        header: 'Tx Id',
+        accessor: (row: TxTableData) => truncateMiddle(row[TxTableColumns.TxId]),
+        cellRenderer: defaultCellRenderer,
+      },
+      {
+        id: TxTableColumns.TxType,
+        header: 'Tx Type',
+        accessor: (row: TxTableData) => row[TxTableColumns.TxType],
+        cellRenderer: defaultCellRenderer,
+      },
       {
         id: TxTableColumns.From,
         header: 'From',
+        accessor: (row: TxTableData) => truncateMiddle(row[TxTableColumns.From]),
         cellRenderer: defaultCellRenderer,
       },
       {
         id: TxTableColumns.To,
         header: 'To',
+        accessor: (row: TxTableData) => truncateMiddle(row[TxTableColumns.To]),
         cellRenderer: defaultCellRenderer,
       },
-      { id: TxTableColumns.Fee, header: 'Fee', cellRenderer: defaultCellRenderer },
+      {
+        id: TxTableColumns.Fee,
+        header: 'Fee',
+        accessor: (row: TxTableData) => row[TxTableColumns.Fee],
+        cellRenderer: defaultCellRenderer,
+      },
       {
         id: TxTableColumns.BlockTime,
         header: 'Block Time',
+        accessor: (row: TxTableData) => row[TxTableColumns.BlockTime],
         cellRenderer: defaultCellRenderer,
       },
-      { id: TxTableColumns.Amount, header: 'Amount', cellRenderer: defaultCellRenderer },
+      {
+        id: TxTableColumns.Amount,
+        header: 'Amount',
+        accessor: (row: TxTableData) => row[TxTableColumns.Amount],
+        cellRenderer: defaultCellRenderer,
+      },
     ],
     []
   );
 
-  return <Table rowData={rowData} columnDefinitions={columnDefinitions} />;
+  return (
+    <Table
+      rowData={rowData}
+      columnDefinitions={columnDefinitions}
+      tableContainerWrapper={table => (
+        <TableContainer title={'Transactions'}>{table}</TableContainer>
+      )}
+    />
+  );
 }
