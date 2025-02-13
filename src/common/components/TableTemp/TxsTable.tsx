@@ -9,11 +9,10 @@ import { Transaction } from '@stacks/stacks-blockchain-api-types';
 
 import { CellRenderer, ColumnDefinition, Table } from './Table';
 import { TableContainer } from './TableContainer';
-import { LinkCellRenderer } from './TxTableCellRenderers';
+import { LinkCellRenderer, TxTypeCellRenderer, defaultCellRenderer } from './TxTableCellRenderers';
 import { truncateMiddle } from '@/common/utils/utils';
-import { TxTypeCellRenderer } from './TxTableCellRenderers';
 
-enum TxTableColumns {
+export enum TxTableColumns {
   Transaction = 'transaction',
   TxId = 'txId',
   TxType = 'txType',
@@ -35,15 +34,7 @@ export interface TxTableData {
   [TxTableColumns.Fee]: string;
 }
 
-const defaultCellRenderer: CellRenderer<TxTableData, string> = value => {
-  return (
-    <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
-      {String(value)}
-    </Text>
-  );
-};
-
-function getToAddress(tx: Transaction): string {
+export function getToAddress(tx: Transaction): string {
   if (tx.tx_type === 'token_transfer') {
     return tx.token_transfer?.recipient_address;
   }
@@ -59,7 +50,7 @@ function getToAddress(tx: Transaction): string {
   return '';
 }
 
-function getAmount(tx: Transaction): number {
+export function getAmount(tx: Transaction): number {
   if (tx.tx_type === 'token_transfer') {
     return Number(tx.token_transfer?.amount);
   }

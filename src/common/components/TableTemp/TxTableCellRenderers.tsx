@@ -2,10 +2,18 @@ import { TxLink } from '@/common/components/ExplorerLinks';
 import { Text } from '@/ui/Text';
 import ClarityIcon from '@/ui/icons/ClarityIcon';
 import { Flex, Icon } from '@chakra-ui/react';
-import { ArrowsLeftRight, PhoneCall } from '@phosphor-icons/react';
+import { ArrowsLeftRight, PhoneCall, Question } from '@phosphor-icons/react';
 
 import { CellRenderer } from './Table';
 import { TxTableData } from './TxsTable';
+
+export const defaultCellRenderer: CellRenderer<TxTableData, string> = value => {
+  return (
+    <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
+      {String(value)}
+    </Text>
+  );
+};
 
 function getTxTypeIcon(txType: string) {
   switch (txType) {
@@ -15,6 +23,8 @@ function getTxTypeIcon(txType: string) {
       return <PhoneCall />;
     case 'smart_contract':
       return <ClarityIcon />;
+    default:
+      return <Question />;
   }
 }
 
@@ -71,6 +81,16 @@ export const TxTypeCellRenderer = ({ txType }: { txType: string }) => {
 };
 
 export const LinkCellRenderer: CellRenderer<TxTableData, string> = (value: string) => {
+  return (
+    <TxLink txId={value}>
+      <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
+        {value}
+      </Text>
+    </TxLink>
+  );
+};
+
+export const FeeCellRenderer: CellRenderer<TxTableData, string> = (value: string) => {
   return (
     <TxLink txId={value}>
       <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
