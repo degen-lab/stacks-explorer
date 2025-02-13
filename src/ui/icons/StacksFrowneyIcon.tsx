@@ -21,9 +21,9 @@ const weights = new Map<IconWeight, ReactElement>([
             cy="33.0001"
             r="14.99"
             stroke="url(#paint0_linear_4321_75096)"
-            stroke-width="18.7364"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="18.7364"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </g>
         <g filter="url(#filter1_b_4321_75096)">
@@ -32,9 +32,9 @@ const weights = new Map<IconWeight, ReactElement>([
             cy="33.0001"
             r="9.36819"
             stroke="url(#paint1_linear_4321_75096)"
-            stroke-width="14.6965"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="14.6965"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </g>
         <g filter="url(#filter2_b_4321_75096)">
@@ -43,9 +43,9 @@ const weights = new Map<IconWeight, ReactElement>([
             cy="33"
             r="22.6318"
             stroke="url(#paint2_linear_4321_75096)"
-            stroke-width="18.7364"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="18.7364"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </g>
         <g filter="url(#filter3_b_4321_75096)">
@@ -55,10 +55,10 @@ const weights = new Map<IconWeight, ReactElement>([
             cy="33.0001"
             r="15.5128"
             stroke="url(#paint4_linear_4321_75096)"
-            stroke-opacity="0.4"
-            stroke-width="18.7364"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeOpacity="0.4"
+            strokeWidth="18.7364"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </g>
         <g filter="url(#filter4_b_4321_75096)">
@@ -68,9 +68,9 @@ const weights = new Map<IconWeight, ReactElement>([
             cy="33.0001"
             r="8.43068"
             stroke="url(#paint6_linear_4321_75096)"
-            stroke-width="16.5714"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="16.5714"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </g>
         <circle
@@ -86,8 +86,8 @@ const weights = new Map<IconWeight, ReactElement>([
           transform="rotate(-26.1044 40.0043 22.5059)"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M46.0132 29.9367C46.3789 30.5701 47.4584 30.5194 48.0917 30.1537C49.3663 29.4179 50.9961 29.8546 51.732 31.1292C52.4679 32.4038 52.0312 34.0336 50.7566 34.7694C49.482 35.5053 47.8522 35.0686 47.1163 33.794C46.7247 33.1157 45.652 32.3771 44.9737 32.7687L25.0761 44.2566C24.3978 44.6482 24.5011 45.9461 24.8927 46.6244C25.6286 47.899 25.1919 49.5288 23.9173 50.2647C22.6427 51.0006 21.0129 50.5639 20.277 49.2893C19.5411 48.0147 19.9779 46.3849 21.2524 45.649C21.885 45.2838 22.4666 44.3764 22.1014 43.7438L21.7063 43.0595C21.3641 42.4667 21.5672 41.7086 22.16 41.3663L43.9264 28.7995C44.5188 28.4575 45.2764 28.6605 45.6184 29.2529L46.0132 29.9367Z"
         />
         <defs>
@@ -98,9 +98,9 @@ const weights = new Map<IconWeight, ReactElement>([
             width="70.2832"
             height="70.2827"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
             <feGaussianBlur in="BackgroundImageFix" stdDeviation="5.39159" />
             <feComposite
               in2="SourceAlpha"
@@ -121,9 +121,9 @@ const weights = new Map<IconWeight, ReactElement>([
             width="55"
             height="54.9992"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
             <feGaussianBlur in="BackgroundImageFix" stdDeviation="5.39159" />
             <feComposite
               in2="SourceAlpha"
@@ -144,9 +144,9 @@ const weights = new Map<IconWeight, ReactElement>([
             width="85.5664"
             height="85.5664"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
             <feGaussianBlur in="BackgroundImageFix" stdDeviation="5.39159" />
             <feComposite
               in2="SourceAlpha"
@@ -167,9 +167,9 @@ const weights = new Map<IconWeight, ReactElement>([
             width="71.3281"
             height="71.3283"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
             <feGaussianBlur in="BackgroundImageFix" stdDeviation="5.39159" />
             <feComposite
               in2="SourceAlpha"
@@ -190,9 +190,9 @@ const weights = new Map<IconWeight, ReactElement>([
             width="55"
             height="54.9992"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
             <feGaussianBlur in="BackgroundImageFix" stdDeviation="5.39159" />
             <feComposite
               in2="SourceAlpha"
@@ -214,8 +214,8 @@ const weights = new Map<IconWeight, ReactElement>([
             y2="8.64184"
             gradientUnits="userSpaceOnUse"
           >
-            <stop offset="0.276042" stop-color="#95918C" />
-            <stop offset="0.526042" stop-color="#E5E0DC" stop-opacity="0.34" />
+            <stop offset="0.276042" stopColor="#95918C" />
+            <stop offset="0.526042" stopColor="#E5E0DC" stopOpacity="0.34" />
           </linearGradient>
           <linearGradient
             id="paint1_linear_4321_75096"
@@ -225,8 +225,8 @@ const weights = new Map<IconWeight, ReactElement>([
             y2="16.2837"
             gradientUnits="userSpaceOnUse"
           >
-            <stop offset="0.276042" stop-color="#95918C" />
-            <stop offset="0.526042" stop-color="#E5E0DC" stop-opacity="0.34" />
+            <stop offset="0.276042" stopColor="#95918C" />
+            <stop offset="0.526042" stopColor="#E5E0DC" stopOpacity="0.34" />
           </linearGradient>
           <linearGradient
             id="paint2_linear_4321_75096"
@@ -236,8 +236,8 @@ const weights = new Map<IconWeight, ReactElement>([
             y2="1"
             gradientUnits="userSpaceOnUse"
           >
-            <stop offset="0.276042" stop-color="#95918C" stop-opacity="0.69" />
-            <stop offset="0.526042" stop-color="#E5E0DC" stop-opacity="0.44" />
+            <stop offset="0.276042" stopColor="#95918C" stopOpacity="0.69" />
+            <stop offset="0.526042" stopColor="#E5E0DC" stopOpacity="0.44" />
           </linearGradient>
           <linearGradient
             id="paint3_linear_4321_75096"
@@ -247,8 +247,8 @@ const weights = new Map<IconWeight, ReactElement>([
             y2="8.11914"
             gradientUnits="userSpaceOnUse"
           >
-            <stop offset="0.276042" stop-color="#95918C" stop-opacity="0.69" />
-            <stop offset="0.526042" stop-color="#E5E0DC" stop-opacity="0.34" />
+            <stop offset="0.276042" stopColor="#95918C" stopOpacity="0.69" />
+            <stop offset="0.526042" stopColor="#E5E0DC" stopOpacity="0.34" />
           </linearGradient>
           <linearGradient
             id="paint4_linear_4321_75096"
@@ -258,8 +258,8 @@ const weights = new Map<IconWeight, ReactElement>([
             y2="8.11914"
             gradientUnits="userSpaceOnUse"
           >
-            <stop offset="0.276042" stop-color="#95918C" stop-opacity="0.69" />
-            <stop offset="0.526042" stop-color="#E5E0DC" stop-opacity="0.34" />
+            <stop offset="0.276042" stopColor="#95918C" stopOpacity="0.69" />
+            <stop offset="0.526042" stopColor="#E5E0DC" stopOpacity="0.34" />
           </linearGradient>
           <linearGradient
             id="paint5_linear_4321_75096"
@@ -269,8 +269,8 @@ const weights = new Map<IconWeight, ReactElement>([
             y2="16.2837"
             gradientUnits="userSpaceOnUse"
           >
-            <stop offset="0.276042" stop-color="#95918C" stop-opacity="0.69" />
-            <stop offset="0.629036" stop-color="#E5E0DC" stop-opacity="0.34" />
+            <stop offset="0.276042" stopColor="#95918C" stopOpacity="0.69" />
+            <stop offset="0.629036" stopColor="#E5E0DC" stopOpacity="0.34" />
           </linearGradient>
           <linearGradient
             id="paint6_linear_4321_75096"
@@ -280,8 +280,8 @@ const weights = new Map<IconWeight, ReactElement>([
             y2="16.2837"
             gradientUnits="userSpaceOnUse"
           >
-            <stop offset="0.276042" stop-color="#95918C" stop-opacity="0.69" />
-            <stop offset="0.526042" stop-color="#E5E0DC" stop-opacity="0.34" />
+            <stop offset="0.276042" stopColor="#95918C" stopOpacity="0.69" />
+            <stop offset="0.526042" stopColor="#E5E0DC" stopOpacity="0.34" />
           </linearGradient>
         </defs>
       </svg>
