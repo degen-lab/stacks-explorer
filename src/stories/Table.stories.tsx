@@ -23,6 +23,8 @@ const sampleData: DataRow[] = [
   ['Bob Johnson', 45, 'Paris'],
 ];
 
+
+
 export const Default: Story = {
   args: {
     title: 'Sample Table',

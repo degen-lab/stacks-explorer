@@ -10,7 +10,7 @@ import { Transaction } from '@stacks/stacks-blockchain-api-types';
 
 import { CellRenderer, ColumnDefinition, Table } from './Table';
 import { TableContainer } from './TableContainer';
-import { TxTypeCellRenderer } from './TxTableCellRenderers';
+import { LinkCellRenderer, TxTypeCellRenderer } from './TxTableCellRenderers';
 
 enum TxTableColumns {
   Transaction = 'transaction',
@@ -23,7 +23,7 @@ enum TxTableColumns {
   Fee = 'feeRate',
 }
 
-interface TxTableData {
+export interface TxTableData {
   [TxTableColumns.Transaction]: string;
   [TxTableColumns.TxId]: string;
   [TxTableColumns.TxType]:string;
@@ -101,18 +101,16 @@ export function TxsTable() {
       },
       {
         id: TxTableColumns.TxId,
-        header: 'Tx Id',
+        header: 'ID',
         accessor: (row: TxTableData) => truncateMiddle(row[TxTableColumns.TxId]),
-        cellRenderer: defaultCellRenderer,
+        cellRenderer: LinkCellRenderer,
       },
-      // {
-      //   id: TxTableColumns.TxType,
-      //   header: 'Tx Type',
-      //   accessor: (row: TxTableData) => row[TxTableColumns.TxType],
-      //   cellRenderer: defaultCellRenderer,
-
-      //   // cellRenderer: value => <TxTypeCellRenderer txType={value} />,
-      // },
+      {
+        id: TxTableColumns.TxType,
+        header: 'Tx Type',
+        accessor: (row: TxTableData) => row[TxTableColumns.TxType],
+        cellRenderer: value => <TxTypeCellRenderer txType={value} />,
+      },
       {
         id: TxTableColumns.From,
         header: 'From',

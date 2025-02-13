@@ -220,7 +220,7 @@ export function TableRow<T>({
   );
 }
 
-export type CellRenderer<T, R> = (value: R | undefined, row: T) => React.ReactNode;
+export type CellRenderer<T, K extends keyof T, R = T[K]> = (value: R, row: T) => React.ReactNode;
 
 /**
  * Defines the structure of a table column
@@ -228,33 +228,13 @@ export type CellRenderer<T, R> = (value: R | undefined, row: T) => React.ReactNo
  * @template K - The keys/properties available in T (must be valid keys of T)
  * @template R - The type of the value at T[K], defaults to T[K]
  */
-/**
- * dataKey is a type-safe way to directly access a property from your data object (like row.name)
- * accessor is more flexible, allowing complex transformations (like row => ${row.firstName} ${row.lastName})
- * Having both gives you the choice between simple property access and complex data transformations2.
- * id is a unique string identifier for the column
- * columnId is a numeric index, useful for maintaining column order and optimizing rendering - This separation allows for both human-readable identifiers and efficient internal operations.
- * cellRenderer handles the visual presentation of the data - Decouples data transformation (accessor) from presentation logic - Enables custom components, formatting, or interactive elements within cells
- * Why have an accessor vs just using the cellrender?
- * Accessor:
- * Handles data transformation/extraction
- * Returns the raw data value
- * Used for sorting operations
- * Can be reused across different cell renderers
- * Keeps business logic separate from presentation
- * CellRenderer:
- * Handles only the presentation/UI
- * Takes the processed data from accessor and renders it
- * Can include formatting, styling, and interactive elements
- * Focuses purely on how to display the data
- */
 export interface ColumnDefinition<T, K extends keyof T, R = T[K]> {
   id: string;
   header: string;
   tooltip?: string;
   accessor: (row: T) => R;
   onSort?: (a: T, b: T) => number;
-  cellRenderer: CellRenderer<T, R>;
+  cellRenderer: CellRenderer<T, K, R>;
 }
 
 export interface TableProps<T> {
@@ -284,6 +264,7 @@ export function Table<T>({
   const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
   const [sortedRowData, setSortedRowData] = useState(rowData);
   console.log({ rowData });
+
   // Handles table sorting when sort column or order changes.
   useEffect(() => {
     if (!sortColumnId || !sortOrder) {
@@ -301,7 +282,6 @@ export function Table<T>({
         throw new Error(`Column ${sortColumnId} does not have an onSort function`);
       }
       setSortedRowData(
-        // TODO: how to handle server sorting and filtering
         sortOrder
           ? rowData.sort((a, b) => {
               const result = columnDefinition.onSort!(a, b);
