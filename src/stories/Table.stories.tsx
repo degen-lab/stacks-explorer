@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { ColumnDefinition, Table } from '../common/components/table/Table';
+import { ColumnDefinition, Table } from '../common/components/TableTemp/Table';
 
 const meta: Meta<typeof Table> = {
   title: 'Components/Table',
@@ -22,8 +22,6 @@ const sampleData: DataRow[] = [
   ['Jane Smith', 32, 'London'],
   ['Bob Johnson', 45, 'Paris'],
 ];
-
-
 
 export const Default: Story = {
   args: {

@@ -1,7 +1,7 @@
 import { Stack } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 
-import { TableProps } from '../table/Table';
+import { TableProps } from '../TableTemp/Table';
 import { PaginationControl } from './PaginationControls';
 
 interface CursorPaginationProps {

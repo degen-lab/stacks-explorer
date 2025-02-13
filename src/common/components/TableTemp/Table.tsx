@@ -82,7 +82,7 @@ function SortIcon({
   );
 }
 
-export function TableHeader<T>({
+export function TableHeader<R>({
   columnDefinition,
   sortColumn,
   sortOrder,
@@ -94,7 +94,7 @@ export function TableHeader<T>({
 }: {
   sortColumn?: string | null;
   sortOrder?: SortOrder;
-  columnDefinition: ColumnDefinition<T, keyof T>;
+  columnDefinition: ColumnDefinition<R, keyof R>;
   headerTitle: string;
   columnIndex: number;
   setSortColumnId: (columnId: string) => void;
@@ -165,14 +165,14 @@ export function TableHeader<T>({
   );
 }
 
-export function TableRow<T>({
+export function TableRow<R>({
   rowData,
   columnDefinitions,
   rowIndex,
   hasFixedFirstColumn,
 }: {
-  rowData: T;
-  columnDefinitions: ColumnDefinition<T, keyof T>[];
+  rowData: R;
+  columnDefinitions: ColumnDefinition<R, keyof R>[];
   rowIndex: number;
   hasFixedFirstColumn?: boolean;
 }) {
@@ -220,7 +220,7 @@ export function TableRow<T>({
   );
 }
 
-export type CellRenderer<T, K extends keyof T, R = T[K]> = (value: R, row: T) => React.ReactNode;
+export type CellRenderer<R, V> = (value: V, row: R) => React.ReactNode;
 
 /**
  * Defines the structure of a table column
@@ -228,19 +228,19 @@ export type CellRenderer<T, K extends keyof T, R = T[K]> = (value: R, row: T) =>
  * @template K - The keys/properties available in T (must be valid keys of T)
  * @template R - The type of the value at T[K], defaults to T[K]
  */
-export interface ColumnDefinition<T, K extends keyof T, R = T[K]> {
+export interface ColumnDefinition<R, V = R[keyof R]> {
   id: string;
   header: string;
   tooltip?: string;
-  accessor: (row: T) => R;
-  onSort?: (a: T, b: T) => number;
-  cellRenderer: CellRenderer<T, K, R>;
+  accessor: (row: R) => V;
+  onSort?: (a: R, b: R) => number;
+  cellRenderer: CellRenderer<R, V>;
 }
 
-export interface TableProps<T> {
-  rowData: T[];
-  columnDefinitions: ColumnDefinition<T, keyof T>[];
-  onSort?: (columnId: string, sortOrder: SortOrder | undefined) => Promise<T[]>;
+export interface TableProps<R> {
+  rowData: R[];
+  columnDefinitions: ColumnDefinition<R>[];
+  onSort?: (columnId: string, sortOrder: SortOrder | undefined) => Promise<R[]>;
   isLoading?: boolean;
   suspenseWrapper?: (table: React.ReactNode) => React.ReactNode;
   tableContainerWrapper?: (table: React.ReactNode) => React.ReactNode;
@@ -249,7 +249,7 @@ export interface TableProps<T> {
   bannerRow?: React.ReactElement<typeof ChakraTable.Row>;
 }
 
-export function Table<T>({
+export function Table<R>({
   rowData,
   columnDefinitions,
   bannerRow,
@@ -259,7 +259,7 @@ export function Table<T>({
   suspenseWrapper,
   onSort, // For server-side sorting
   isLoading,
-}: TableProps<T>) {
+}: TableProps<R>) {
   const [sortColumnId, setSortColumnId] = useState<string | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
   const [sortedRowData, setSortedRowData] = useState(rowData);
