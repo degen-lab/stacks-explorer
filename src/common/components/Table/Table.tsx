@@ -1,7 +1,8 @@
 import { ScrollableBox } from '@/app/_components/BlockList/ScrollableDiv';
 import { Text } from '@/ui/Text';
 import { Tooltip } from '@/ui/Tooltip';
-import { Table as ChakraTable, Flex, Icon, ClientOnly } from '@chakra-ui/react';
+import StacksFrowneyIcon from '@/ui/icons/StacksFrowneyIcon';
+import { Table as ChakraTable, Flex, Icon, Stack } from '@chakra-ui/react';
 import { ArrowDown, ArrowUp, ArrowsDownUp, Info } from '@phosphor-icons/react';
 import React, { useEffect, useState } from 'react';
 
@@ -282,7 +283,7 @@ export function Table<T>({
   const [sortColumnId, setSortColumnId] = useState<string | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
   const [sortedRowData, setSortedRowData] = useState(rowData);
-  console.log({rowData});
+  console.log({ rowData });
   // Handles table sorting when sort column or order changes.
   useEffect(() => {
     if (!sortColumnId || !sortOrder) {
@@ -310,6 +311,36 @@ export function Table<T>({
       );
     }
   }, [sortColumnId, sortOrder, rowData, columnDefinitions, onSort]);
+
+  if (rowData.length === 0) {
+    return (
+      <Flex
+        justifyContent="center"
+        alignItems="center"
+        height="800px"
+        w="full"
+        borderRadius="2xl"
+        borderColor="newBorderSecondary"
+        borderWidth={1}
+        borderStyle="solid"
+        bg="surface"
+      >
+        <Stack alignItems="center" gap={6}>
+          <Icon h={16} w={16}>
+            <StacksFrowneyIcon />
+          </Icon>
+          <Stack gap={2} alignItems="center">
+            <Text fontSize="2xl" fontWeight="medium" color="textPrimary">
+              No results found
+            </Text>
+            <Text fontSize="md" color="textSecondary">
+              Try modifying filters applied.
+            </Text>
+          </Stack>
+        </Stack>
+      </Flex>
+    );
+  }
 
   let content: React.ReactNode = (
     <ChakraTable.Root
@@ -369,10 +400,8 @@ export function Table<T>({
   }
 
   return (
-    <ClientOnly>
-      <ExplorerErrorBoundary Wrapper={TableContainer} tryAgainButton>
-        {content}
-      </ExplorerErrorBoundary>
-    </ClientOnly>
+    <ExplorerErrorBoundary Wrapper={TableContainer} tryAgainButton>
+      {content}
+    </ExplorerErrorBoundary>
   );
 }

@@ -1,3 +1,5 @@
+'use client';
+
 import { useInfiniteQueryResult } from '@/common/hooks/useInfiniteQueryResult';
 import { useConfirmedTransactionsInfinite } from '@/common/queries/useConfirmedTransactionsInfinite';
 import { truncateMiddle } from '@/common/utils/utils';
@@ -103,14 +105,14 @@ export function TxsTable() {
         accessor: (row: TxTableData) => truncateMiddle(row[TxTableColumns.TxId]),
         cellRenderer: defaultCellRenderer,
       },
-      {
-        id: TxTableColumns.TxType,
-        header: 'Tx Type',
-        accessor: (row: TxTableData) => row[TxTableColumns.TxType],
-        cellRenderer: defaultCellRenderer,
+      // {
+      //   id: TxTableColumns.TxType,
+      //   header: 'Tx Type',
+      //   accessor: (row: TxTableData) => row[TxTableColumns.TxType],
+      //   cellRenderer: defaultCellRenderer,
 
-        // cellRenderer: value => <TxTypeCellRenderer txType={value} />,
-      },
+      //   // cellRenderer: value => <TxTypeCellRenderer txType={value} />,
+      // },
       {
         id: TxTableColumns.From,
         header: 'From',
