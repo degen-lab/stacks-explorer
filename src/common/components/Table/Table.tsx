@@ -1,7 +1,7 @@
 import { ScrollableBox } from '@/app/_components/BlockList/ScrollableDiv';
 import { Text } from '@/ui/Text';
 import { Tooltip } from '@/ui/Tooltip';
-import { Table as ChakraTable, Flex, Icon } from '@chakra-ui/react';
+import { Table as ChakraTable, Flex, Icon, ClientOnly } from '@chakra-ui/react';
 import { ArrowDown, ArrowUp, ArrowsDownUp, Info } from '@phosphor-icons/react';
 import React, { useEffect, useState } from 'react';
 
@@ -89,6 +89,7 @@ export function TableHeader<T>({
   columnIndex,
   setSortColumnId,
   setSortOrder,
+  hasFixedFirstColumn,
 }: {
   sortColumn?: string | null;
   sortOrder?: SortOrder;
@@ -97,6 +98,7 @@ export function TableHeader<T>({
   columnIndex: number;
   setSortColumnId: (columnId: string) => void;
   setSortOrder: (sortOrder: SortOrder | undefined) => void;
+  hasFixedFirstColumn?: boolean;
 }) {
   const isFirstColumn = columnIndex === 0;
   return (
@@ -105,7 +107,7 @@ export function TableHeader<T>({
       px={6}
       border="none"
       borderBottom="1px solid var(--stacks-colors-surface-secondary)"
-      css={isFirstColumn ? fixedFirstColumnCss : {}}
+      css={hasFixedFirstColumn && isFirstColumn ? fixedFirstColumnCss : {}}
       width="fit-content"
       role="columnheader"
       aria-sort={sortOrder ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
@@ -166,10 +168,12 @@ export function TableRow<T>({
   rowData,
   columnDefinitions,
   rowIndex,
+  hasFixedFirstColumn,
 }: {
   rowData: T;
   columnDefinitions: ColumnDefinition<T, keyof T>[];
   rowIndex: number;
+  hasFixedFirstColumn?: boolean;
 }) {
   return (
     <ChakraTable.Row
@@ -193,7 +197,7 @@ export function TableRow<T>({
             py={4}
             px={6}
             css={{
-              ...(isFirstColumn
+              ...(hasFixedFirstColumn && isFirstColumn
                 ? {
                     ...fixedFirstColumnCss,
                     '&:hover': {
@@ -278,7 +282,7 @@ export function Table<T>({
   const [sortColumnId, setSortColumnId] = useState<string | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
   const [sortedRowData, setSortedRowData] = useState(rowData);
-
+  console.log({rowData});
   // Handles table sorting when sort column or order changes.
   useEffect(() => {
     if (!sortColumnId || !sortOrder) {
@@ -328,6 +332,7 @@ export function Table<T>({
               setSortColumnId={setSortColumnId}
               setSortOrder={setSortOrder}
               columnIndex={colIndex}
+              hasFixedFirstColumn={hasFixedFirstColumn}
             />
           ))}
         </ChakraTable.Row>
@@ -340,6 +345,7 @@ export function Table<T>({
             rowIndex={rowIndex}
             rowData={rowData}
             columnDefinitions={columnDefinitions}
+            hasFixedFirstColumn={hasFixedFirstColumn}
           />
         ))}
       </ChakraTable.Body>
@@ -363,8 +369,10 @@ export function Table<T>({
   }
 
   return (
-    <ExplorerErrorBoundary Wrapper={TableContainer} tryAgainButton>
-      {content}
-    </ExplorerErrorBoundary>
+    <ClientOnly>
+      <ExplorerErrorBoundary Wrapper={TableContainer} tryAgainButton>
+        {content}
+      </ExplorerErrorBoundary>
+    </ClientOnly>
   );
 }

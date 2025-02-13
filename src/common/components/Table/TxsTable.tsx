@@ -1,5 +1,6 @@
 import { useInfiniteQueryResult } from '@/common/hooks/useInfiniteQueryResult';
 import { useConfirmedTransactionsInfinite } from '@/common/queries/useConfirmedTransactionsInfinite';
+import { truncateMiddle } from '@/common/utils/utils';
 import { Text } from '@/ui/Text';
 import { useMemo } from 'react';
 
@@ -7,7 +8,7 @@ import { Transaction } from '@stacks/stacks-blockchain-api-types';
 
 import { CellRenderer, ColumnDefinition, Table } from './Table';
 import { TableContainer } from './TableContainer';
-import { truncateMiddle } from '@/common/utils/utils';
+import { TxTypeCellRenderer } from './TxTableCellRenderers';
 
 enum TxTableColumns {
   Transaction = 'transaction',
@@ -23,7 +24,7 @@ enum TxTableColumns {
 interface TxTableData {
   [TxTableColumns.Transaction]: string;
   [TxTableColumns.TxId]: string;
-  [TxTableColumns.TxType]: string;
+  [TxTableColumns.TxType]:string;
   [TxTableColumns.From]: string;
   [TxTableColumns.To]: string;
   [TxTableColumns.Fee]: string;
@@ -67,7 +68,7 @@ function getAmount(tx: Transaction): number {
 export function TxsTable() {
   const response = useConfirmedTransactionsInfinite();
   const txs = useInfiniteQueryResult<Transaction>(response, 100);
-  console.log({txs});
+  console.log({ txs });
 
   const rowData: TxTableData[] = useMemo(
     () =>
@@ -107,6 +108,8 @@ export function TxsTable() {
         header: 'Tx Type',
         accessor: (row: TxTableData) => row[TxTableColumns.TxType],
         cellRenderer: defaultCellRenderer,
+
+        // cellRenderer: value => <TxTypeCellRenderer txType={value} />,
       },
       {
         id: TxTableColumns.From,
@@ -146,6 +149,7 @@ export function TxsTable() {
     <Table
       rowData={rowData}
       columnDefinitions={columnDefinitions}
+      hasScrollIndicator
       tableContainerWrapper={table => (
         <TableContainer title={'Transactions'}>{table}</TableContainer>
       )}
