@@ -27,7 +27,11 @@ function Toolbar({
         gap={4}
       >
         {title ? (
-          <Text color={{_light: 'slate.900', _dark: 'white'}} fontWeight="normal" fontSize="3.5xl">
+          <Text
+            color={{ _light: 'slate.900', _dark: 'white' }}
+            fontWeight="normal"
+            fontSize="3.5xl"
+          >
             {title}
           </Text>
         ) : topLeft ? (
@@ -57,9 +61,9 @@ export function TableContainer({
   ...rest
 }: TableContainerProps) {
   return (
-    <Stack gap={7} w="full">
+    <Stack gap={7} w="fit-content">
       <Toolbar topLeft={topLeft} topRight={topRight} title={title} />
-      <Card h="fit-content" w="full" p={4} {...rest}>
+      <Card h="fit-content" w="full" p={[3, 3, 4]} {...rest}>
         <Box position={'relative'}>{children}</Box>
       </Card>
     </Stack>

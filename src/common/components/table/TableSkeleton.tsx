@@ -3,12 +3,12 @@ import { useMemo } from 'react';
 
 import { ColumnDefinition, Table } from './Table';
 
-function getDefaultSkeletonColumnDefinition(id: string): ColumnDefinition<T, string> {
+function getDefaultSkeletonColumnDefinition(id: string): ColumnDefinition<any, string> {
   return {
     id,
-    header: <Skeleton height={5} width={5} />,
+    header: <Skeleton height={5} width={25} />,
     accessor: () => '',
-    cellRenderer: () => <Skeleton height={5} width={5} />,
+    cellRenderer: () => <Skeleton height={5} width={25} />,
   };
 }
 

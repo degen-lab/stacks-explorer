@@ -112,6 +112,7 @@ export function TableHeader<R, V = R[keyof R]>({
       width="fit-content"
       role="columnheader"
       aria-sort={sortOrder ? (sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
+      minH={13}
     >
       <Flex
         w="fit-content"
@@ -193,6 +194,7 @@ export function TableRow<R, V = R[keyof R]>({
         },
       }}
       className="group"
+      minH={13}
     >
       {columnDefinitions.map((colDef, colIndex) => {
         const isFirstColumn = colIndex === 0;
@@ -334,7 +336,12 @@ export function Table<R>({
         '& td': {
           borderBottom: 'none',
         },
+        '& tbody': {
+          position: 'relative',
+          top: 2,
+        },
       }}
+      overflowX="auto"
     >
       <ChakraTable.Header>
         <ChakraTable.Row>

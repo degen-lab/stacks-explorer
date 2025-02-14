@@ -1,6 +1,5 @@
 'use client';
 
-import { TxsTable } from '@/common/components/table/table-examples/TxsTable';
 import { Grid } from '@chakra-ui/react';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';

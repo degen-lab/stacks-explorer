@@ -1,13 +1,15 @@
 import { AddressLink, TxLink } from '@/common/components/ExplorerLinks';
+import { getContractName } from '@/common/utils/utils';
 import { Text } from '@/ui/Text';
 import ClarityIcon from '@/ui/icons/ClarityIcon';
 import StxIcon from '@/ui/icons/StxIcon';
 import { Flex, Icon } from '@chakra-ui/react';
-import { ArrowsLeftRight, PhoneCall, Question, XCircle } from '@phosphor-icons/react';
+import { ArrowsLeftRight, Clock, PhoneCall, Question, XCircle } from '@phosphor-icons/react';
+
+import { MempoolTransactionStatus, TransactionStatus } from '@stacks/stacks-blockchain-api-types';
 
 import { CellRenderer } from '../Table';
 import { TxTableData, TxTableTransactionColumnData } from './TxsTable';
-import { getContractName } from '@/common/utils/utils';
 
 export const defaultCellRenderer: CellRenderer<TxTableData, string> = value => {
   return (
@@ -142,14 +144,84 @@ export const TimeStampCellRenderer: CellRenderer<TxTableData, string> = (value: 
 };
 
 export const IconCellRenderer: CellRenderer<TxTableData, React.ReactNode> = (
-  value: React.ReactNode,
-  row: TxTableData
+  value: React.ReactNode
 ) => {
-  console.log({ value, row });
   return (
     <Icon h={3} w={3} color="textSecondary">
       {value}
     </Icon>
+  );
+};
+
+function getTxStatusIcon(status: TransactionStatus | MempoolTransactionStatus) {
+  switch (status) {
+    case 'pending':
+      return <Clock />;
+    case 'abort_by_post_condition':
+      return <XCircle />;
+    case 'abort_by_response':
+      return <XCircle />;
+    default:
+      return <Question />;
+  }
+}
+
+function getTxStatusLabel(status: TransactionStatus | MempoolTransactionStatus) {
+  switch (status) {
+    case 'pending':
+      return 'Pending';
+    case 'abort_by_post_condition':
+      return 'Failed';
+    case 'abort_by_response':
+      return 'Failed';
+    default:
+      return 'Unknown';
+  }
+}
+
+function getTxStatusIconColor(status: TransactionStatus | MempoolTransactionStatus) {
+  switch (status) {
+    case 'pending':
+      return 'transactionStatus.pending';
+    case 'abort_by_post_condition':
+      return 'feedback.red-500';
+    case 'abort_by_response':
+      return 'feedback.red-500';
+    default:
+      return 'iconSecondary';
+  }
+}
+
+function getTxStatusBgColor(status: TransactionStatus | MempoolTransactionStatus) {
+  switch (status) {
+    case 'pending':
+      return 'transactionStatus.pending';
+    case 'abort_by_post_condition':
+      return 'transactionStatus.failed';
+    case 'abort_by_response':
+      return 'transactionStatus.failed';
+    default:
+      return 'surfaceSecondary';
+  }
+}
+
+const StatusTag = ({ status }: { status: TransactionStatus | MempoolTransactionStatus }) => {
+  return (
+    <Flex
+      alignItems="center"
+      gap={1}
+      px={1.5}
+      py={0.5}
+      bg={getTxStatusBgColor(status)}
+      borderRadius="redesign.md"
+    >
+      <Icon h={3} w={3} color={getTxStatusIconColor(status)}>
+        {getTxStatusIcon(status)}
+      </Icon>
+      <Text fontSize="xs" fontWeight="medium" color="textSecondary">
+        {getTxStatusLabel(status)}
+      </Text>
+    </Flex>
   );
 };
 
@@ -185,18 +257,11 @@ export const TransactionTitleCellRenderer: CellRenderer<
     );
   }
 
-  if (status === 'abort_by_post_condition' || status === 'abort_by_response') {
+  if (status && status !== 'success') {
     return (
       <Flex alignItems="center" gap={1.5}>
         {content}
-        <Flex alignItems="center" gap={1} px={1.5} py={0.5} bg="transactionStatus.failed" borderRadius="redesign.md">
-          <Icon h={3} w={3} color="feedback.red-500">
-            <XCircle />
-          </Icon>
-          <Text fontSize="xs" fontWeight="medium" color="textSecondary">
-            Failed
-          </Text>
-        </Flex>
+        <StatusTag status={status} />
       </Flex>
     );
   }
