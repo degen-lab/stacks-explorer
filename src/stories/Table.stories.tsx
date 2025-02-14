@@ -1,19 +1,22 @@
-import { TableContainer } from '@/common/components/TableTemp/TableContainer';
+import { TableContainer } from '@/common/components/table/TableContainer';
 import {
   UpdateTableBannerRow,
   columnDefinitions as txTableColumnDefinitions,
-} from '@/common/components/TableTemp/TxsTable';
+} from '@/common/components/table/TxsTable';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { ColumnDefinition, Table } from '../common/components/TableTemp/Table';
-import {
-  SimpleTableColumns,
-  SimpleTableData,
-  simpleTableRowData,
-} from './table-data/simple-table-data';
-import { txTableRowData } from './table-data/tx-table-data';
+import { Table, TableProps } from '../common/components/table/Table';
+import { simpleTableRowData } from './table-utils/simple-table-data';
+import { getSimpleTableColumnDefinitions } from './table-utils/simple-table-utils';
+import { txTableRowData } from './table-utils/tx-table-data';
 
-const meta: Meta<typeof Table> = {
+interface TableStoryArgs extends TableProps<unknown> {
+  isEmpty?: boolean;
+  hasSorting?: boolean;
+  hasTableContainerWrapper?: boolean;
+}
+
+const meta: Meta<TableStoryArgs> = {
   title: 'Components/Table',
   component: Table,
   parameters: {
@@ -34,106 +37,42 @@ const meta: Meta<typeof Table> = {
       control: 'boolean',
       description: 'Toggle banner row visibility',
     },
+    // Fake props to add controls to the table
+    hasTableContainerWrapper: {
+      control: 'boolean',
+      description: 'Toggle table container wrapper visibility',
+    },
+    hasSorting: {
+      control: 'boolean',
+      description: 'Add sorting to the table',
+    },
+    isEmpty: {
+      control: 'boolean',
+      description: 'Toggle empty table visibility',
+    },
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof Table<any>>;
+type Story = StoryObj<TableStoryArgs>;
 
-export const SimpleTable: Story = {
-  args: {
-    columnDefinitions: [
-      {
-        id: 'name',
-        header: 'Name',
-        accessor: (row: SimpleTableData) => row[SimpleTableColumns.Name],
-        cellRenderer: (value: string) => <strong>{value}</strong>,
-      },
-      {
-        id: 'age',
-        header: 'Age',
-        accessor: (row: SimpleTableData) => row[SimpleTableColumns.Age],
-        tooltip: 'Age in years',
-        cellRenderer: (value: number) => `${value} years`,
-      },
-      {
-        id: 'city',
-        header: 'City',
-        accessor: (row: SimpleTableData) => row[SimpleTableColumns.City],
-        cellRenderer: (value: string) => <strong>{value}</strong>,
-      },
-    ] as ColumnDefinition<SimpleTableData>[],
-    rowData: simpleTableRowData,
-  },
-};
-
-export const TableWithTableContainer: Story = {
-  args: {
-    tableContainerWrapper: table => <TableContainer>{table}</TableContainer>,
-    columnDefinitions: [
-      {
-        id: 'name',
-        header: 'Name',
-        accessor: (row: SimpleTableData) => row[SimpleTableColumns.Name],
-        cellRenderer: (value: string) => <strong>{value}</strong>,
-      },
-      {
-        id: 'age',
-        header: 'Age',
-        accessor: (row: SimpleTableData) => row[SimpleTableColumns.Age],
-        tooltip: 'Age in years',
-        cellRenderer: (value: number) => `${value} years`,
-      },
-      {
-        id: 'city',
-        header: 'City',
-        accessor: (row: SimpleTableData) => row[SimpleTableColumns.City],
-        cellRenderer: (value: string) => <strong>{value}</strong>,
-      },
-    ] as ColumnDefinition<SimpleTableData>[],
-    rowData: simpleTableRowData,
-  },
-};
-
-export const TableWithSorting: Story = {
-  args: {
-    tableContainerWrapper: table => <TableContainer>{table}</TableContainer>,
-    columnDefinitions: [
-      {
-        id: 'name',
-        header: 'Name',
-        accessor: (row: SimpleTableData) => row[SimpleTableColumns.Name],
-        cellRenderer: (value: string) => <strong>{value}</strong>,
-        onSort: (a: SimpleTableData, b: SimpleTableData) =>
-          a[SimpleTableColumns.Name].localeCompare(b[SimpleTableColumns.Name]),
-      },
-      {
-        id: 'age',
-        header: 'Age',
-        accessor: (row: SimpleTableData) => row[SimpleTableColumns.Age],
-        tooltip: 'Age in years',
-        cellRenderer: (value: number) => `${value} years`,
-        onSort: (a: SimpleTableData, b: SimpleTableData) =>
-          a[SimpleTableColumns.Age] - b[SimpleTableColumns.Age],
-      },
-      {
-        id: 'city',
-        header: 'City',
-        accessor: (row: SimpleTableData) => row[SimpleTableColumns.City],
-        cellRenderer: (value: string) => <strong>{value}</strong>,
-        onSort: (a: SimpleTableData, b: SimpleTableData) =>
-          a[SimpleTableColumns.City].localeCompare(b[SimpleTableColumns.City]),
-      },
-    ] as ColumnDefinition<SimpleTableData>[],
-    rowData: simpleTableRowData,
-    onSort: undefined,
-  },
+export const SimpleTableWithTableContainer: Story = {
+  render: args => (
+    <Table
+      tableContainerWrapper={
+        args.hasTableContainerWrapper
+          ? table => <TableContainer>{table}</TableContainer>
+          : undefined
+      }
+      columnDefinitions={getSimpleTableColumnDefinitions(args.hasSorting)}
+      rowData={args.isEmpty ? [] : simpleTableRowData}
+    />
+  ),
 };
 
 export const TxTable: Story = {
   render: args => (
     <Table
-      {...args}
       tableContainerWrapper={table => (
         <TableContainer title={'Transactions'}>{table}</TableContainer>
       )}
@@ -142,10 +81,4 @@ export const TxTable: Story = {
       bannerRow={args.bannerRow ? <UpdateTableBannerRow /> : undefined}
     />
   ),
-};
-
-export const Empty: Story = {
-  args: {
-    rowData: [],
-  },
 };

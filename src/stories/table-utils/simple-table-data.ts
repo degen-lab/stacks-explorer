@@ -1,20 +1,4 @@
-export enum SimpleTableColumns {
-  Name = 'name',
-  Age = 'age',
-  City = 'city',
-  Date = 'date',
-  Status = 'status',
-  StxBalance = 'stxBalance',
-}
-
-export interface SimpleTableData {
-  [SimpleTableColumns.Name]: string;
-  [SimpleTableColumns.Age]: number;
-  [SimpleTableColumns.City]: string;
-  [SimpleTableColumns.Date]: Date;
-  [SimpleTableColumns.Status]: string;
-  [SimpleTableColumns.StxBalance]: number;
-}
+import { SimpleTableData } from "./simple-table-utils";
 
 export const simpleTableRowData: SimpleTableData[] = [
   {
