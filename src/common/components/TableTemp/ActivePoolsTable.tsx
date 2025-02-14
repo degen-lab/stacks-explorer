@@ -36,44 +36,6 @@ const defaultCellRenderer: CellRenderer<ActivePoolsData, string | number> = (
   );
 };
 
-export function UpdateTableBannerRow() {
-  const numColumns = Object.keys(ActivePoolsColumns).length;
-
-  return (
-    <ChakraTable.Row
-      css={{
-        '& > td:first-of-type': {
-          borderTopLeftRadius: 'redesign.md',
-          borderBottomLeftRadius: 'redesign.md',
-        },
-        '& > td:last-of-type': {
-          borderTopRightRadius: 'redesign.md',
-          borderBottomRightRadius: 'redesign.md',
-        },
-      }}
-    >
-      <ChakraTable.Cell colSpan={numColumns} py={2} px={1}>
-        <Flex
-          alignItems="center"
-          justifyContent="center"
-          gap={1.5}
-          boxShadow="0px 4px 12px 0px color(display-p3 0.9882 0.3922 0.1961 / 0.25), 0px 4px 12px 0px rgba(255, 85, 18, 0.25)"
-          border="1px dashed var(--stacks-colors-accent-stacks-500)"
-          borderRadius="redesign.lg"
-          h={12}
-        >
-          <Text fontSize="sm" fontWeight="medium" color="textSecondary">
-            New transactions have come in. Update list
-          </Text>
-          <Icon h={3.5} w={3.5} color="iconTertiary">
-            <ArrowsClockwise />
-          </Icon>
-        </Flex>
-      </ChakraTable.Cell>
-    </ChakraTable.Row>
-  );
-}
-
 export function ActivePoolsTable() {
   const rowData: ActivePoolsData[] = useMemo(() => {
     const data: ActivePoolsData[] = Array.from({ length: 10 }, (_, index) => ({
@@ -146,7 +108,6 @@ export function ActivePoolsTable() {
       tableContainerWrapper={table => (
         <TableContainer title={'Active Pools'}>{table}</TableContainer>
       )}
-      bannerRow={<UpdateTableBannerRow />}
     />
   );
 }

@@ -1,9 +1,13 @@
+import {
+  TxTableColumns,
+  TxTableData,
+  getAmount,
+  getToAddress,
+} from '@/common/components/TableTemp/TxsTable';
+
 import { Transaction } from '@stacks/stacks-blockchain-api-types';
 
-import { TxTableColumns } from '@/common/components/TableTemp/TxsTable';
-import { TxTableData, getAmount, getToAddress } from '@/common/components/TableTemp/TxsTable';
-
-export const txTableSampleData = [
+export const txTableData = [
   {
     tx_id: '0xca85ac121953ead526a3ca4bad5dfe011dbe253ba1b76c63c0ba3e784a55d2b1',
     nonce: 3,
@@ -2148,7 +2152,7 @@ export const txTableSampleData = [
   },
 ];
 
-export const sampleTxTableRowData: TxTableData[] = txTableSampleData.map(tx => {
+export const txTableRowData: TxTableData[] = txTableData.map(tx => {
   const to = getToAddress(tx as Transaction);
   const amount = getAmount(tx as Transaction);
   return {

@@ -2,15 +2,25 @@
 
 import { useInfiniteQueryResult } from '@/common/hooks/useInfiniteQueryResult';
 import { useConfirmedTransactionsInfinite } from '@/common/queries/useConfirmedTransactionsInfinite';
+import { microToStacksFormatted, truncateMiddle } from '@/common/utils/utils';
 import { Text } from '@/ui/Text';
+import { Table as ChakraTable, Flex, Icon } from '@chakra-ui/react';
+import { UTCDate } from '@date-fns/utc';
+import { ArrowsClockwise } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 
 import { Transaction } from '@stacks/stacks-blockchain-api-types';
 
-import { CellRenderer, ColumnDefinition, Table } from './Table';
+import { ColumnDefinition, Table } from './Table';
 import { TableContainer } from './TableContainer';
-import { LinkCellRenderer, TxTypeCellRenderer, defaultCellRenderer } from './TxTableCellRenderers';
-import { truncateMiddle } from '@/common/utils/utils';
+import {
+  AddressLinkCellRenderer,
+  FeeCellRenderer,
+  TimeStampCellRenderer,
+  TxLinkCellRenderer,
+  TxTypeCellRenderer,
+  defaultCellRenderer,
+} from './TxTableCellRenderers';
 
 export enum TxTableColumns {
   Transaction = 'transaction',
@@ -57,7 +67,27 @@ export function getAmount(tx: Transaction): number {
   return 0;
 }
 
-const columnDefinitions: ColumnDefinition<TxTableData, any>[] = [
+// TODO: API doesn't return any information about the token, eg it's name, symbol, tokenImage, etc. Open a ticket to get this added.
+// export function getAmountSymbol(tx: Transaction): string {
+//   if (tx.tx_type === 'token_transfer') {
+//     return tx.token_transfer?.token_symbol ?? '';
+//   }
+//   return '';
+// }
+
+export function formatBlockTime(timestamp: number): string {
+  const date = new UTCDate(timestamp * 1000);
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  const hours = String(date.getUTCHours()).padStart(2, '0');
+  const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+  const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds} (UTC)`;
+}
+
+export const columnDefinitions: ColumnDefinition<TxTableData, any>[] = [
   {
     id: TxTableColumns.Transaction,
     header: 'Transaction',
@@ -68,7 +98,7 @@ const columnDefinitions: ColumnDefinition<TxTableData, any>[] = [
     id: TxTableColumns.TxId,
     header: 'ID',
     accessor: (row: TxTableData) => truncateMiddle(row[TxTableColumns.TxId]),
-    cellRenderer: LinkCellRenderer,
+    cellRenderer: TxLinkCellRenderer,
   } as ColumnDefinition<TxTableData, string>,
   {
     id: TxTableColumns.TxType,
@@ -76,37 +106,75 @@ const columnDefinitions: ColumnDefinition<TxTableData, any>[] = [
     accessor: (row: TxTableData) => row[TxTableColumns.TxType],
     cellRenderer: value => <TxTypeCellRenderer txType={value} />,
   } as ColumnDefinition<TxTableData, string>,
-  // {
-  //   id: TxTableColumns.From,
-  //   header: 'From',
-  //   accessor: (row: TxTableData) => truncateMiddle(row[TxTableColumns.From]),
-  //   cellRenderer: defaultCellRenderer,
-  // },
-  // {
-  //   id: TxTableColumns.To,
-  //   header: 'To',
-  //   accessor: (row: TxTableData) => truncateMiddle(row[TxTableColumns.To]),
-  //   cellRenderer: defaultCellRenderer,
-  // },
-  // {
-  //   id: TxTableColumns.Fee,
-  //   header: 'Fee',
-  //   accessor: (row: TxTableData) => row[TxTableColumns.Fee],
-  //   cellRenderer: defaultCellRenderer,
-  // },
-  // {
-  //   id: TxTableColumns.BlockTime,
-  //   header: 'Block Time',
-  //   accessor: (row: TxTableData) => row[TxTableColumns.BlockTime],
-  //   cellRenderer: defaultCellRenderer,
-  // },
+  {
+    id: TxTableColumns.From,
+    header: 'From',
+    accessor: (row: TxTableData) => truncateMiddle(row[TxTableColumns.From]),
+    cellRenderer: AddressLinkCellRenderer,
+  } as ColumnDefinition<TxTableData, string>,
+  {
+    id: TxTableColumns.To,
+    header: 'To',
+    accessor: (row: TxTableData) => truncateMiddle(row[TxTableColumns.To]),
+    cellRenderer: AddressLinkCellRenderer,
+  } as ColumnDefinition<TxTableData, string>,
+  {
+    id: TxTableColumns.Fee,
+    header: 'Fee',
+    accessor: (row: TxTableData) => microToStacksFormatted(row[TxTableColumns.Fee]),
+    cellRenderer: FeeCellRenderer,
+  } as ColumnDefinition<TxTableData, string>,
   // {
   //   id: TxTableColumns.Amount,
   //   header: 'Amount',
   //   accessor: (row: TxTableData) => row[TxTableColumns.Amount],
-  //   cellRenderer: defaultCellRenderer,
-  // },
+  //   cellRenderer: AmountCellRenderer,
+  // } as ColumnDefinition<TxTableData, number>,
+  {
+    id: TxTableColumns.BlockTime,
+    header: 'Block Time',
+    accessor: (row: TxTableData) => formatBlockTime(row[TxTableColumns.BlockTime]),
+    cellRenderer: TimeStampCellRenderer,
+  } as ColumnDefinition<TxTableData, string>,
 ];
+
+export function UpdateTableBannerRow() {
+  const numColumns = Object.keys(TxTableColumns).length;
+
+  return (
+    <ChakraTable.Row
+      css={{
+        '& > td:first-of-type': {
+          borderTopLeftRadius: 'redesign.md',
+          borderBottomLeftRadius: 'redesign.md',
+        },
+        '& > td:last-of-type': {
+          borderTopRightRadius: 'redesign.md',
+          borderBottomRightRadius: 'redesign.md',
+        },
+      }}
+    >
+      <ChakraTable.Cell colSpan={numColumns} py={2} px={1}>
+        <Flex
+          alignItems="center"
+          justifyContent="center"
+          gap={1.5}
+          boxShadow="0px 4px 12px 0px color(display-p3 0.9882 0.3922 0.1961 / 0.25), 0px 4px 12px 0px rgba(255, 85, 18, 0.25)"
+          border="1px dashed var(--stacks-colors-accent-stacks-500)"
+          borderRadius="redesign.lg"
+          h={12}
+        >
+          <Text fontSize="sm" fontWeight="medium" color="textSecondary">
+            New transactions have come in. Update list
+          </Text>
+          <Icon h={3.5} w={3.5} color="iconTertiary">
+            <ArrowsClockwise />
+          </Icon>
+        </Flex>
+      </ChakraTable.Cell>
+    </ChakraTable.Row>
+  );
+}
 
 export function TxsTable() {
   const response = useConfirmedTransactionsInfinite();

@@ -1,6 +1,7 @@
-import { TxLink } from '@/common/components/ExplorerLinks';
+import { AddressLink, TxLink } from '@/common/components/ExplorerLinks';
 import { Text } from '@/ui/Text';
 import ClarityIcon from '@/ui/icons/ClarityIcon';
+import StxIcon from '@/ui/icons/StxIcon';
 import { Flex, Icon } from '@chakra-ui/react';
 import { ArrowsLeftRight, PhoneCall, Question } from '@phosphor-icons/react';
 
@@ -36,6 +37,8 @@ function getTxTypeLabel(txType: string) {
       return 'Contract Call';
     case 'smart_contract':
       return 'Contract Deploy';
+    default:
+      return 'Unknown';
   }
 }
 
@@ -59,6 +62,7 @@ export const TxTypeCellRenderer = ({ txType }: { txType: string }) => {
       borderWidth={1}
       borderStyle="solid"
       bg="surfaceSecondary"
+      w='fit-content'
     >
       <Flex alignItems="center" gap={1.5}>
         <Flex
@@ -80,7 +84,7 @@ export const TxTypeCellRenderer = ({ txType }: { txType: string }) => {
   );
 };
 
-export const LinkCellRenderer: CellRenderer<TxTableData, string> = (value: string) => {
+export const TxLinkCellRenderer: CellRenderer<TxTableData, string> = (value: string) => {
   return (
     <TxLink txId={value}>
       <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
@@ -90,12 +94,48 @@ export const LinkCellRenderer: CellRenderer<TxTableData, string> = (value: strin
   );
 };
 
-export const FeeCellRenderer: CellRenderer<TxTableData, string> = (value: string) => {
+export const AddressLinkCellRenderer: CellRenderer<TxTableData, string> = (value: string) => {
   return (
-    <TxLink txId={value}>
+    <AddressLink principal={value}>
       <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
         {value}
       </Text>
-    </TxLink>
+    </AddressLink>
+  );
+};
+
+export const FeeCellRenderer: CellRenderer<TxTableData, string> = (value: string) => {
+  return (
+    <Flex alignItems="center" gap={1}>
+      <Icon h={3} w={3} color="textSecondary">
+        <StxIcon />
+      </Icon>
+      <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
+        {value} STX
+      </Text>
+    </Flex>
+  );
+};
+
+export const AmountCellRenderer: CellRenderer<TxTableData, number> = (value: number) => {
+  return (
+    <Flex alignItems="center" gap={1}>
+      <Icon h={3} w={3} color="textSecondary">
+        <StxIcon />
+      </Icon>
+      <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
+        {value} STX
+      </Text>
+    </Flex>
+  );
+};
+
+export const TimeStampCellRenderer: CellRenderer<TxTableData, string> = (value: string) => {
+  return (
+    <Flex alignItems="center" justifyContent="center" bg='surfacePrimary' borderRadius='sm' p={1.5}>
+    <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
+      {value}
+    </Text>
+    </Flex>
   );
 };

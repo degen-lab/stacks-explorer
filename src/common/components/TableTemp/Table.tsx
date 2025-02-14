@@ -82,7 +82,7 @@ function SortIcon({
   );
 }
 
-export function TableHeader<R>({
+export function TableHeader<R, V = R[keyof R]>({
   columnDefinition,
   sortColumn,
   sortOrder,
@@ -94,7 +94,7 @@ export function TableHeader<R>({
 }: {
   sortColumn?: string | null;
   sortOrder?: SortOrder;
-  columnDefinition: ColumnDefinition<R, keyof R>;
+  columnDefinition: ColumnDefinition<R, V>;
   headerTitle: string;
   columnIndex: number;
   setSortColumnId: (columnId: string) => void;
@@ -165,14 +165,14 @@ export function TableHeader<R>({
   );
 }
 
-export function TableRow<R>({
+export function TableRow<R, V = R[keyof R]>({
   rowData,
   columnDefinitions,
   rowIndex,
   hasFixedFirstColumn,
 }: {
   rowData: R;
-  columnDefinitions: ColumnDefinition<R, keyof R>[];
+  columnDefinitions: ColumnDefinition<R, V>[];
   rowIndex: number;
   hasFixedFirstColumn?: boolean;
 }) {
@@ -263,27 +263,28 @@ export function Table<R>({
   const [sortColumnId, setSortColumnId] = useState<string | undefined>(undefined);
   const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(undefined);
   const [sortedRowData, setSortedRowData] = useState(rowData);
-  console.log({ rowData });
 
   // Handles table sorting when sort column or order changes.
   useEffect(() => {
     if (!sortColumnId || !sortOrder) {
+      setSortedRowData(rowData); // If no sort column or order, show the original unsorted data
       return;
     }
     const columnDefinition = columnDefinitions.find(col => col.id === sortColumnId);
     if (!columnDefinition) {
       throw new Error(`Column definition not found for columnId: ${sortColumnId}`);
     }
-    if (onSort) {
+    if (!!onSort) {
       // Let the parent component handle the loading state and data updates
       onSort(sortColumnId, sortOrder).then(setSortedRowData);
     } else {
       if (!columnDefinition.onSort) {
         throw new Error(`Column ${sortColumnId} does not have an onSort function`);
       }
+      console.log({ sortOrder, sortColumnId });
       setSortedRowData(
         sortOrder
-          ? rowData.sort((a, b) => {
+          ? [...rowData].sort((a, b) => {
               const result = columnDefinition.onSort!(a, b);
               return sortOrder === 'asc' ? result : -result;
             })
