@@ -56,7 +56,7 @@ const meta: Meta<TableStoryArgs> = {
 export default meta;
 type Story = StoryObj<TableStoryArgs>;
 
-export const SimpleTableWithTableContainer: Story = {
+export const SimpleTable: Story = {
   render: args => (
     <Table
       tableContainerWrapper={

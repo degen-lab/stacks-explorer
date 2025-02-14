@@ -50,7 +50,7 @@ export function ActivePoolsTable() {
     return data;
   }, []);
 
-  const columnDefinitions: ColumnDefinition<ActivePoolsData, ActivePoolsColumns>[] = useMemo(
+  const columnDefinitions: ColumnDefinition<ActivePoolsData, any>[] = useMemo(
     () => [
       {
         id: ActivePoolsColumns.Provider,
@@ -58,43 +58,43 @@ export function ActivePoolsTable() {
         onSort: (a, b) => a.provider.localeCompare(b.provider),
         accessor: row => row[ActivePoolsColumns.Provider],
         cellRenderer: defaultCellRenderer,
-      },
+      } as ColumnDefinition<ActivePoolsData, string>,
       {
         id: ActivePoolsColumns.PoxAddress,
         header: 'PoX Address',
         accessor: row => row[ActivePoolsColumns.PoxAddress],
         cellRenderer: defaultCellRenderer,
-      },
+      } as ColumnDefinition<ActivePoolsData, string>,
       {
         id: ActivePoolsColumns.Contract,
         header: 'Contract',
         accessor: row => row[ActivePoolsColumns.Contract],
         cellRenderer: defaultCellRenderer,
-      },
+      } as ColumnDefinition<ActivePoolsData, string>,
       {
         id: ActivePoolsColumns.RewardsIn,
         header: 'Rewards in',
         accessor: row => row[ActivePoolsColumns.RewardsIn],
         cellRenderer: defaultCellRenderer,
-      },
+      } as ColumnDefinition<ActivePoolsData, string>,
       {
         id: ActivePoolsColumns.StackersDelegating,
         header: 'Stackers delegating',
         accessor: row => row[ActivePoolsColumns.StackersDelegating],
         cellRenderer: defaultCellRenderer,
-      },
+      } as ColumnDefinition<ActivePoolsData, number>,
       {
         id: ActivePoolsColumns.AmountStacked,
         header: 'Amount stacked',
         accessor: row => row[ActivePoolsColumns.AmountStacked],
         cellRenderer: defaultCellRenderer,
-      },
+      } as ColumnDefinition<ActivePoolsData, number>,
       {
         id: ActivePoolsColumns.Rewards,
         header: 'Rewards',
         accessor: row => row[ActivePoolsColumns.Rewards],
         cellRenderer: defaultCellRenderer,
-      },
+      } as ColumnDefinition<ActivePoolsData, number>,
     ],
     []
   );

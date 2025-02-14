@@ -4,6 +4,7 @@ import {
   getAmount,
   getToAddress,
 } from '@/common/components/table/table-examples/TxsTable';
+import { ArrowRight } from '@phosphor-icons/react';
 
 import { Transaction } from '@stacks/stacks-blockchain-api-types';
 
@@ -2156,10 +2157,17 @@ export const txTableRowData: TxTableData[] = txTableData.map(tx => {
   const to = getToAddress(tx as Transaction);
   const amount = getAmount(tx as Transaction);
   return {
-    [TxTableColumns.Transaction]: 'N/A',
+    [TxTableColumns.Transaction]: {
+      amount,
+      functionName: tx.tx_type === 'contract_call' ? tx.contract_call?.function_name : undefined,
+      contractName: tx.tx_type === 'contract_call' ? tx.contract_call?.contract_id : undefined,
+      txType: tx.tx_type,
+      status: tx.tx_status,
+    },
     [TxTableColumns.TxId]: tx.tx_id,
     [TxTableColumns.TxType]: tx.tx_type,
     [TxTableColumns.From]: tx.sender_address,
+    [TxTableColumns.ArrowRight]: <ArrowRight />,
     [TxTableColumns.To]: to,
     [TxTableColumns.Fee]: tx.fee_rate,
     [TxTableColumns.Amount]: amount,

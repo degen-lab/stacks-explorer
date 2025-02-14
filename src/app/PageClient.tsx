@@ -36,8 +36,6 @@ export function HomePageLayout({
     <>
       {title}
       {stats}
-      {/* <ActivePoolsTable /> */}
-      <TxsTable />
       <Grid
         gap="7"
         width="full"

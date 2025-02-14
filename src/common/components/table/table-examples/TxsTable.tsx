@@ -6,7 +6,7 @@ import { microToStacksFormatted, truncateMiddle } from '@/common/utils/utils';
 import { Text } from '@/ui/Text';
 import { Table as ChakraTable, Flex, Icon } from '@chakra-ui/react';
 import { UTCDate } from '@date-fns/utc';
-import { ArrowsClockwise } from '@phosphor-icons/react';
+import { ArrowRight, ArrowsClockwise } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 
 import { Transaction } from '@stacks/stacks-blockchain-api-types';
@@ -16,10 +16,11 @@ import { TableContainer } from '../TableContainer';
 import {
   AddressLinkCellRenderer,
   FeeCellRenderer,
+  IconCellRenderer,
   TimeStampCellRenderer,
   TxLinkCellRenderer,
   TxTypeCellRenderer,
-  defaultCellRenderer,
+  TransactionTitleCellRenderer,
 } from './TxTableCellRenderers';
 
 export enum TxTableColumns {
@@ -27,6 +28,7 @@ export enum TxTableColumns {
   TxId = 'txId',
   TxType = 'txType',
   From = 'from',
+  ArrowRight = 'arrowRight',
   To = 'to',
   BlockTime = 'blockTime',
   Amount = 'amount',
@@ -34,10 +36,11 @@ export enum TxTableColumns {
 }
 
 export interface TxTableData {
-  [TxTableColumns.Transaction]: string;
+  [TxTableColumns.Transaction]: TxTableTransactionColumnData;
   [TxTableColumns.TxId]: string;
   [TxTableColumns.TxType]: string;
   [TxTableColumns.From]: string;
+  [TxTableColumns.ArrowRight]: JSX.Element;
   [TxTableColumns.To]: string;
   [TxTableColumns.BlockTime]: number;
   [TxTableColumns.Amount]: number;
@@ -87,13 +90,21 @@ export function formatBlockTime(timestamp: number): string {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds} (UTC)`;
 }
 
+export interface TxTableTransactionColumnData {
+  amount?: number;
+  functionName?: string;
+  contractName?: string;
+  txType?: Transaction['tx_type'];
+  status?: Transaction['tx_status'];
+}
+
 export const columnDefinitions: ColumnDefinition<TxTableData, any>[] = [
   {
     id: TxTableColumns.Transaction,
     header: 'Transaction',
     accessor: (row: TxTableData) => row[TxTableColumns.Transaction],
-    cellRenderer: defaultCellRenderer,
-  } as ColumnDefinition<TxTableData, string>,
+    cellRenderer: TransactionTitleCellRenderer,
+  } as ColumnDefinition<TxTableData, TxTableTransactionColumnData>,
   {
     id: TxTableColumns.TxId,
     header: 'ID',
@@ -112,6 +123,12 @@ export const columnDefinitions: ColumnDefinition<TxTableData, any>[] = [
     accessor: (row: TxTableData) => truncateMiddle(row[TxTableColumns.From]),
     cellRenderer: AddressLinkCellRenderer,
   } as ColumnDefinition<TxTableData, string>,
+  {
+    id: TxTableColumns.ArrowRight,
+    header: '',
+    accessor: (row: TxTableData) => row[TxTableColumns.ArrowRight],
+    cellRenderer: IconCellRenderer,
+  } as ColumnDefinition<TxTableData, React.ReactNode>,
   {
     id: TxTableColumns.To,
     header: 'To',
@@ -179,7 +196,6 @@ export function UpdateTableBannerRow() {
 export function TxsTable() {
   const response = useConfirmedTransactionsInfinite();
   const txs = useInfiniteQueryResult<Transaction>(response, 100);
-  console.log({ txs });
 
   const rowData: TxTableData[] = useMemo(
     () =>
@@ -187,15 +203,24 @@ export function TxsTable() {
         const to = getToAddress(tx);
         const amount = getAmount(tx);
         return {
-          [TxTableColumns.Transaction]: 'N/A',
+          [TxTableColumns.Transaction]: {
+            amount,
+            functionName:
+              tx.tx_type === 'contract_call' ? tx.contract_call?.function_name : undefined,
+            contractName:
+              tx.tx_type === 'contract_call' ? tx.contract_call?.contract_id : undefined,
+            txType: tx.tx_type,
+            status: tx.tx_status,
+          },
           [TxTableColumns.TxId]: tx.tx_id,
           [TxTableColumns.TxType]: tx.tx_type,
           [TxTableColumns.From]: tx.sender_address,
+          [TxTableColumns.ArrowRight]: <ArrowRight />,
           [TxTableColumns.To]: to,
           [TxTableColumns.Fee]: tx.fee_rate,
           [TxTableColumns.Amount]: amount,
           [TxTableColumns.BlockTime]: tx.block_time,
-        };
+        } as TxTableData;
       }),
     [txs]
   );

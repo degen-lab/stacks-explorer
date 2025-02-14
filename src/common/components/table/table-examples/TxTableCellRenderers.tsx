@@ -3,10 +3,10 @@ import { Text } from '@/ui/Text';
 import ClarityIcon from '@/ui/icons/ClarityIcon';
 import StxIcon from '@/ui/icons/StxIcon';
 import { Flex, Icon } from '@chakra-ui/react';
-import { ArrowsLeftRight, PhoneCall, Question } from '@phosphor-icons/react';
+import { ArrowsLeftRight, PhoneCall, Question, XCircle } from '@phosphor-icons/react';
 
 import { CellRenderer } from '../Table';
-import { TxTableData } from './TxsTable';
+import { TxTableData, TxTableTransactionColumnData } from './TxsTable';
 
 export const defaultCellRenderer: CellRenderer<TxTableData, string> = value => {
   return (
@@ -138,4 +138,66 @@ export const TimeStampCellRenderer: CellRenderer<TxTableData, string> = (value: 
       </Text>
     </Flex>
   );
+};
+
+export const IconCellRenderer: CellRenderer<TxTableData, React.ReactNode> = (
+  value: React.ReactNode,
+  row: TxTableData
+) => {
+  console.log({ value, row });
+  return (
+    <Icon h={3} w={3} color="textSecondary">
+      {value}
+    </Icon>
+  );
+};
+
+export const TransactionTitleCellRenderer: CellRenderer<
+  TxTableData,
+  TxTableTransactionColumnData
+> = (value: TxTableTransactionColumnData) => {
+  const { functionName, contractName, txType, status, amount } = value;
+
+  let content: React.ReactNode = null;
+  if (txType === 'contract_call') {
+    content = (
+      <Flex gap={1}>
+        <Text fontSize="sm" fontWeight="medium" color="textPrimary">
+          {functionName}
+        </Text>
+        <Flex gap={1}>
+          <Icon h={3} w={3} color="iconSecondary">
+            <ClarityIcon />
+          </Icon>
+          <Text fontSize="xs" fontWeight="medium" color="textSecondary">
+            {contractName}
+          </Text>
+        </Flex>
+      </Flex>
+    );
+  }
+  if (txType === 'token_transfer') {
+    content = (
+      <Text fontSize="sm" fontWeight="medium" color="textPrimary">
+        {amount}
+      </Text>
+    );
+  }
+
+  if (status === 'abort_by_post_condition' || status === 'abort_by_response') {
+    return (
+      <Flex>
+        {content}
+        <Flex gap={1} px={1.5} py={0.5} bg="transactionStatus.failed" borderRadius="redesign.md">
+          <Icon h={3} w={3} color="feedback.red-600">
+            <XCircle />
+          </Icon>
+          <Text fontSize="xs" fontWeight="medium" color="textSecondary">
+            Failed
+          </Text>
+        </Flex>
+      </Flex>
+    );
+  }
+  return content;
 };
