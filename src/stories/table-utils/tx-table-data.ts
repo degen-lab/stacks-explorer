@@ -3,7 +3,7 @@ import {
   TxTableData,
   getAmount,
   getToAddress,
-} from '@/common/components/table/TxsTable';
+} from '@/common/components/table/table-examples/TxsTable';
 
 import { Transaction } from '@stacks/stacks-blockchain-api-types';
 

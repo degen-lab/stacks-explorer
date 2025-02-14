@@ -3,8 +3,8 @@ import { Table as ChakraTable, Flex, Icon } from '@chakra-ui/react';
 import { ArrowsClockwise } from '@phosphor-icons/react';
 import { useMemo } from 'react';
 
-import { CellRenderer, ColumnDefinition, Table } from './Table';
-import { TableContainer } from './TableContainer';
+import { CellRenderer, ColumnDefinition, Table } from '../Table';
+import { TableContainer } from '../TableContainer';
 
 enum ActivePoolsColumns {
   Provider = 'provider',

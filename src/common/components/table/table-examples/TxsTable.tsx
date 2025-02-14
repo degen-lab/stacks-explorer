@@ -11,8 +11,8 @@ import { useMemo } from 'react';
 
 import { Transaction } from '@stacks/stacks-blockchain-api-types';
 
-import { ColumnDefinition, Table } from './Table';
-import { TableContainer } from './TableContainer';
+import { ColumnDefinition, Table } from '../Table';
+import { TableContainer } from '../TableContainer';
 import {
   AddressLinkCellRenderer,
   FeeCellRenderer,

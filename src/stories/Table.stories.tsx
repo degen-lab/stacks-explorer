@@ -2,7 +2,7 @@ import { TableContainer } from '@/common/components/table/TableContainer';
 import {
   UpdateTableBannerRow,
   columnDefinitions as txTableColumnDefinitions,
-} from '@/common/components/table/TxsTable';
+} from '@/common/components/table/table-examples/TxsTable';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Table, TableProps } from '../common/components/table/Table';

@@ -5,7 +5,7 @@ import StxIcon from '@/ui/icons/StxIcon';
 import { Flex, Icon } from '@chakra-ui/react';
 import { ArrowsLeftRight, PhoneCall, Question } from '@phosphor-icons/react';
 
-import { CellRenderer } from './Table';
+import { CellRenderer } from '../Table';
 import { TxTableData } from './TxsTable';
 
 export const defaultCellRenderer: CellRenderer<TxTableData, string> = value => {
@@ -62,7 +62,7 @@ export const TxTypeCellRenderer = ({ txType }: { txType: string }) => {
       borderWidth={1}
       borderStyle="solid"
       bg="surfaceSecondary"
-      w='fit-content'
+      w="fit-content"
     >
       <Flex alignItems="center" gap={1.5}>
         <Flex
@@ -132,10 +132,10 @@ export const AmountCellRenderer: CellRenderer<TxTableData, number> = (value: num
 
 export const TimeStampCellRenderer: CellRenderer<TxTableData, string> = (value: string) => {
   return (
-    <Flex alignItems="center" justifyContent="center" bg='surfacePrimary' borderRadius='sm' p={1.5}>
-    <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
-      {value}
-    </Text>
+    <Flex alignItems="center" justifyContent="center" bg="surfacePrimary" borderRadius="sm" p={1.5}>
+      <Text whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" fontSize="sm">
+        {value}
+      </Text>
     </Flex>
   );
 };
