@@ -7,6 +7,7 @@ import { ArrowsLeftRight, PhoneCall, Question, XCircle } from '@phosphor-icons/r
 
 import { CellRenderer } from '../Table';
 import { TxTableData, TxTableTransactionColumnData } from './TxsTable';
+import { getContractName } from '@/common/utils/utils';
 
 export const defaultCellRenderer: CellRenderer<TxTableData, string> = value => {
   return (
@@ -162,15 +163,15 @@ export const TransactionTitleCellRenderer: CellRenderer<
   if (txType === 'contract_call') {
     content = (
       <Flex gap={1}>
-        <Text fontSize="sm" fontWeight="medium" color="textPrimary">
+        <Text fontSize="sm" fontWeight="medium" color="textPrimary" whiteSpace="nowrap">
           {functionName}
         </Text>
-        <Flex gap={1}>
+        <Flex gap={1} alignItems="center" bg="surfacePrimary" borderRadius="md" px={1.5} py={0.5}>
           <Icon h={3} w={3} color="iconSecondary">
             <ClarityIcon />
           </Icon>
-          <Text fontSize="xs" fontWeight="medium" color="textSecondary">
-            {contractName}
+          <Text fontSize="xs" fontWeight="medium" color="textSecondary" whiteSpace="nowrap">
+            {getContractName(contractName ?? '')}
           </Text>
         </Flex>
       </Flex>
@@ -179,17 +180,17 @@ export const TransactionTitleCellRenderer: CellRenderer<
   if (txType === 'token_transfer') {
     content = (
       <Text fontSize="sm" fontWeight="medium" color="textPrimary">
-        {amount}
+        {amount} STX
       </Text>
     );
   }
 
   if (status === 'abort_by_post_condition' || status === 'abort_by_response') {
     return (
-      <Flex>
+      <Flex alignItems="center" gap={1.5}>
         {content}
-        <Flex gap={1} px={1.5} py={0.5} bg="transactionStatus.failed" borderRadius="redesign.md">
-          <Icon h={3} w={3} color="feedback.red-600">
+        <Flex alignItems="center" gap={1} px={1.5} py={0.5} bg="transactionStatus.failed" borderRadius="redesign.md">
+          <Icon h={3} w={3} color="feedback.red-500">
             <XCircle />
           </Icon>
           <Text fontSize="xs" fontWeight="medium" color="textSecondary">

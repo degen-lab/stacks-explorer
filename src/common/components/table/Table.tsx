@@ -95,7 +95,7 @@ export function TableHeader<R, V = R[keyof R]>({
   sortColumn?: string | null;
   sortOrder?: SortOrder;
   columnDefinition: ColumnDefinition<R, V>;
-  headerTitle: string;
+  headerTitle: string | React.ReactNode;
   columnIndex: number;
   setSortColumnId: (columnId: string) => void;
   setSortOrder: (sortOrder: SortOrder | undefined) => void;
@@ -126,11 +126,12 @@ export function TableHeader<R, V = R[keyof R]>({
         borderRadius="redesign.md"
         className="column-header-content"
       >
-        <Text
-          fontWeight="medium"
-          whiteSpace="nowrap"
-          fontSize="sm"
-          color={{
+        {typeof headerTitle === 'string' ? (
+          <Text
+            fontWeight="medium"
+            whiteSpace="nowrap"
+            fontSize="sm"
+            color={{
             _light: 'slate.700',
             _dark: 'slate.250',
           }}
@@ -143,8 +144,11 @@ export function TableHeader<R, V = R[keyof R]>({
             },
           }}
         >
-          {headerTitle}
-        </Text>
+            {headerTitle}
+          </Text>
+        ) : (
+          headerTitle
+        )}
         {columnDefinition.tooltip && (
           <Tooltip content={columnDefinition.tooltip}>
             <Icon h={4} w={4} color="iconSecondary">
@@ -230,7 +234,7 @@ export type CellRenderer<R, V> = (value: V, row: R) => React.ReactNode;
  */
 export interface ColumnDefinition<R, V = R[keyof R]> {
   id: string;
-  header: string;
+  header: string | React.ReactNode;
   tooltip?: string;
   accessor: (row: R) => V;
   onSort?: (a: R, b: R) => number;

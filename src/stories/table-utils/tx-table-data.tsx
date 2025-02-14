@@ -4,11 +4,12 @@ import {
   getAmount,
   getToAddress,
 } from '@/common/components/table/table-examples/TxsTable';
+import { microToStacksFormatted } from '@/common/utils/utils';
 import { ArrowRight } from '@phosphor-icons/react';
 
 import { Transaction } from '@stacks/stacks-blockchain-api-types';
 
-export const txTableData = [
+export const txTableData: Transaction[] = [
   {
     tx_id: '0xca85ac121953ead526a3ca4bad5dfe011dbe253ba1b76c63c0ba3e784a55d2b1',
     nonce: 3,
@@ -94,7 +95,7 @@ export const txTableData = [
     parent_burn_block_time_iso: '2025-02-13T17:28:01.000Z',
     canonical: true,
     tx_index: 0,
-    tx_status: 'success',
+    tx_status: 'abort_by_post_condition',
     tx_result: {
       hex: '0x0703',
       repr: '(ok true)',
@@ -2158,7 +2159,7 @@ export const txTableRowData: TxTableData[] = txTableData.map(tx => {
   const amount = getAmount(tx as Transaction);
   return {
     [TxTableColumns.Transaction]: {
-      amount,
+      amount: microToStacksFormatted(amount),
       functionName: tx.tx_type === 'contract_call' ? tx.contract_call?.function_name : undefined,
       contractName: tx.tx_type === 'contract_call' ? tx.contract_call?.contract_id : undefined,
       txType: tx.tx_type,

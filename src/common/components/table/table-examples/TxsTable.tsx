@@ -18,9 +18,9 @@ import {
   FeeCellRenderer,
   IconCellRenderer,
   TimeStampCellRenderer,
+  TransactionTitleCellRenderer,
   TxLinkCellRenderer,
   TxTypeCellRenderer,
-  TransactionTitleCellRenderer,
 } from './TxTableCellRenderers';
 
 export enum TxTableColumns {
@@ -91,7 +91,7 @@ export function formatBlockTime(timestamp: number): string {
 }
 
 export interface TxTableTransactionColumnData {
-  amount?: number;
+  amount?: string;
   functionName?: string;
   contractName?: string;
   txType?: Transaction['tx_type'];
@@ -204,7 +204,7 @@ export function TxsTable() {
         const amount = getAmount(tx);
         return {
           [TxTableColumns.Transaction]: {
-            amount,
+            amount: microToStacksFormatted(amount),
             functionName:
               tx.tx_type === 'contract_call' ? tx.contract_call?.function_name : undefined,
             contractName:

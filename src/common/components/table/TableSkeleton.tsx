@@ -3,16 +3,12 @@ import { useMemo } from 'react';
 
 import { ColumnDefinition, Table } from './Table';
 
-function getDefaultSkeletonColumnDefinition<T extends unknown[]>(
-  id: string,
-  header?: React.ReactNode,
-  cellRenderer?: (value: string) => React.ReactNode
-): ColumnDefinition<T, string> {
+function getDefaultSkeletonColumnDefinition(id: string): ColumnDefinition<T, string> {
   return {
     id,
-    header: header ?? <Skeleton height="20px" width="20px" />,
-    accessor: val => '',
-    cellRenderer: cellRenderer ?? ((val: string) => <Skeleton height="20px" width="20px" />),
+    header: <Skeleton height={5} width={5} />,
+    accessor: () => '',
+    cellRenderer: () => <Skeleton height={5} width={5} />,
   };
 }
 
@@ -30,7 +26,7 @@ export function TableSkeleton({
   const columnDefinitions = useMemo(
     () =>
       Array.from({ length: numColumns }).map((_, i) =>
-        getDefaultSkeletonColumnDefinition<unknown[]>(i.toString())
+        getDefaultSkeletonColumnDefinition(i.toString())
       ),
     [numColumns]
   );

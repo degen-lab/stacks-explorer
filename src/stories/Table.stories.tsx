@@ -1,9 +1,11 @@
 import { TableContainer } from '@/common/components/table/TableContainer';
+import { TableSkeleton } from '@/common/components/table/TableSkeleton';
 import {
   UpdateTableBannerRow,
   columnDefinitions as txTableColumnDefinitions,
 } from '@/common/components/table/table-examples/TxsTable';
 import type { Meta, StoryObj } from '@storybook/react';
+import { Suspense } from 'react';
 
 import { Table, TableProps } from '../common/components/table/Table';
 import { simpleTableRowData } from './table-utils/simple-table-data';
@@ -14,6 +16,9 @@ interface TableStoryArgs extends TableProps<unknown> {
   isEmpty?: boolean;
   hasSorting?: boolean;
   hasTableContainerWrapper?: boolean;
+  showSkeleton?: boolean;
+  hasSuspenseWrapper?: boolean;
+  hasError?: boolean;
 }
 
 const meta: Meta<TableStoryArgs> = {
@@ -50,6 +55,18 @@ const meta: Meta<TableStoryArgs> = {
       control: 'boolean',
       description: 'Toggle empty table visibility',
     },
+    showSkeleton: {
+      control: 'boolean',
+      description: 'Toggle skeleton visibility',
+    },
+    hasSuspenseWrapper: {
+      control: 'boolean',
+      description: 'Toggle suspense wrapper visibility',
+    },
+    hasError: {
+      control: 'boolean',
+      description: 'Toggle error visibility',
+    },
   },
 };
 
@@ -65,20 +82,37 @@ export const SimpleTable: Story = {
           : undefined
       }
       columnDefinitions={getSimpleTableColumnDefinitions(args.hasSorting)}
-      rowData={args.isEmpty ? [] : simpleTableRowData}
+      rowData={args.isEmpty ? [] : args.showSkeleton ? [] : simpleTableRowData}
     />
   ),
 };
 
 export const TxTable: Story = {
-  render: args => (
-    <Table
-      tableContainerWrapper={table => (
-        <TableContainer title={'Transactions'}>{table}</TableContainer>
-      )}
-      columnDefinitions={txTableColumnDefinitions}
-      rowData={txTableRowData}
-      bannerRow={args.bannerRow ? <UpdateTableBannerRow /> : undefined}
-    />
-  ),
+  render: args => {
+    if (args.showSkeleton) {
+      throw new Promise((_, reject) => setTimeout(() => reject(), 2000));
+      // or more simply:
+      // throw new Promise(() => {});
+    }
+
+    return (
+      <Table
+        tableContainerWrapper={table => (
+          <TableContainer title={'Transactions'}>{table}</TableContainer>
+        )}
+        columnDefinitions={txTableColumnDefinitions}
+        rowData={args.isEmpty ? [] : txTableRowData}
+        bannerRow={args.bannerRow ? <UpdateTableBannerRow /> : undefined}
+        suspenseWrapper={
+          args.hasSuspenseWrapper
+            ? table => (
+                <Suspense fallback={<TableSkeleton numRows={10} numColumns={5} />}>
+                  {table}
+                </Suspense>
+              )
+            : undefined
+        }
+      />
+    );
+  },
 };
