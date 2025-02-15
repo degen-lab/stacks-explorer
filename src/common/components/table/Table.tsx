@@ -18,7 +18,16 @@ const fixedFirstColumnCss = {
     top: 0,
     width: '2px',
     height: 'full',
-    backgroundColor: 'newBorderPrimary',
+    backgroundColor: 'redesignBorderPrimary',
+  },
+  '.has-horizontal-scroll &:first-of-type::before': {
+    content: '""',
+    position: 'absolute',
+    right: 0,
+    width: '2px',
+    backgroundColor: 'redesignBorderPrimary',
+    top: '-8px', // Accounts for gap between header rows and the other rows
+    height: 'calc(calc(100%) + 8px)',
   },
   '&': {
     position: 'sticky',
@@ -91,6 +100,7 @@ export function TableHeader<R, V = R[keyof R]>({
   setSortColumnId,
   setSortOrder,
   hasFixedFirstColumn,
+  numColumns,
 }: {
   sortColumn?: string | null;
   sortOrder?: SortOrder;
@@ -100,12 +110,13 @@ export function TableHeader<R, V = R[keyof R]>({
   setSortColumnId: (columnId: string) => void;
   setSortOrder: (sortOrder: SortOrder | undefined) => void;
   hasFixedFirstColumn?: boolean;
+  numColumns: number;
 }) {
   const isFirstColumn = columnIndex === 0;
   return (
     <ChakraTable.ColumnHeader
       py={3}
-      px={6}
+      px={[2, 2, 2, `clamp(12px, calc(48px / ${numColumns}), 16px)`]}
       border="none"
       borderBottom="1px solid var(--stacks-colors-surface-secondary)"
       css={hasFixedFirstColumn && isFirstColumn ? fixedFirstColumnCss : {}}
@@ -133,18 +144,18 @@ export function TableHeader<R, V = R[keyof R]>({
             whiteSpace="nowrap"
             fontSize="sm"
             color={{
-            _light: 'slate.700',
-            _dark: 'slate.250',
-          }}
-          textTransform="none"
-          letterSpacing="normal"
-          fontFamily="instrument"
-          css={{
-            '& .column-header-content:hover': {
-              color: 'textPrimary',
-            },
-          }}
-        >
+              _light: 'slate.700',
+              _dark: 'slate.250',
+            }}
+            textTransform="none"
+            letterSpacing="normal"
+            fontFamily="instrument"
+            css={{
+              '& .column-header-content:hover': {
+                color: 'textPrimary',
+              },
+            }}
+          >
             {headerTitle}
           </Text>
         ) : (
@@ -201,8 +212,8 @@ export function TableRow<R, V = R[keyof R]>({
         return (
           <ChakraTable.Cell
             key={`table-row-${rowIndex}-col-${colIndex}`}
-            py={4}
-            px={6}
+            py={3}
+            px={[2, 2, 2, `clamp(12px, calc(48px / ${columnDefinitions.length}), 16px)`]}
             css={{
               ...(hasFixedFirstColumn && isFirstColumn
                 ? {
@@ -342,6 +353,7 @@ export function Table<R>({
         },
       }}
       overflowX="auto"
+      className="table-root"
     >
       <ChakraTable.Header>
         <ChakraTable.Row>
@@ -356,6 +368,7 @@ export function Table<R>({
               setSortOrder={setSortOrder}
               columnIndex={colIndex}
               hasFixedFirstColumn={hasFixedFirstColumn}
+              numColumns={columnDefinitions.length}
             />
           ))}
         </ChakraTable.Row>

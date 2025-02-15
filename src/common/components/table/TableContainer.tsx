@@ -1,4 +1,4 @@
-import { Box, Flex, FlexProps, Stack } from '@chakra-ui/react';
+import { Flex, FlexProps, Stack } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 
 import { Text } from '../../../ui/Text';
@@ -61,10 +61,18 @@ export function TableContainer({
   ...rest
 }: TableContainerProps) {
   return (
-    <Stack gap={7} w="fit-content">
+    <Stack gap={7} w="full" className="table-container">
       <Toolbar topLeft={topLeft} topRight={topRight} title={title} />
-      <Card h="fit-content" w="full" p={[3, 3, 4]} {...rest}>
-        <Box position={'relative'}>{children}</Box>
+      <Card
+        h="fit-content"
+        w="full"
+        p={[3, 3, 3, 4]}
+        borderColor="red"
+        className="table-container-card"
+         overflow='auto'
+        {...rest}
+      >
+        {children}
       </Card>
     </Stack>
   );

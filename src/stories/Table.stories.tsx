@@ -101,49 +101,70 @@ const meta: Meta<TableStoryArgs> = {
       placeholder: 'Enter height (e.g., 500px)',
     },
   },
+  // decorators: [
+  //   (Story, { args }) => {
+  //     const [size, setSize] = useState({
+  //       width: args.containerWidth,
+  //       height: args.containerHeight,
+  //     });
+  //     const containerRef = useRef<HTMLDivElement>(null);
+
+  //     useEffect(() => {
+  //       const observer = new ResizeObserver(entries => {
+  //         const entry = entries[0];
+  //         if (entry) {
+  //           setSize({
+  //             width: Math.round(parseFloat(entry.contentRect.width.toString())).toString(),
+  //             height: Math.round(parseFloat(entry.contentRect.height.toString())).toString(),
+  //           });
+  //         }
+  //       });
+
+  //       if (containerRef.current) {
+  //         observer.observe(containerRef.current);
+  //       }
+
+  //       return () => observer.disconnect();
+  //     }, []);
+
+  //     return (
+  //       <Box
+  //         ref={containerRef}
+  //         w={size.width}
+  //         h={size.height}
+  //         bg="gray.50"
+  //         overflow="hidden"
+  //         border="1px solid"
+  //         borderColor="redesignBorderPrimary"
+  //         resize="both" // Makes this container resizable
+  //         // style={{ maxWidth: '100%' }} // Makes this container resizable
+  //       >
+  //         <Stack p={10} gap={2}>
+  //           <Text fontSize="sm" color="gray.600">
+  //             Size: {size.width}px × {size.height}px
+  //           </Text>
+  //           <Story />
+  //         </Stack>
+  //       </Box>
+  //     );
+  //   },
+  // ],
   decorators: [
     (Story, { args }) => {
-      const [size, setSize] = useState({
-        width: args.containerWidth,
-        height: args.containerHeight,
-      });
-      const containerRef = useRef<HTMLDivElement>(null);
-
-      useEffect(() => {
-        const observer = new ResizeObserver(entries => {
-          const entry = entries[0];
-          if (entry) {
-            setSize({
-              width: Math.round(parseFloat(entry.contentRect.width.toString())).toString(),
-              height: Math.round(parseFloat(entry.contentRect.height.toString())).toString(),
-            });
-          }
-        });
-
-        if (containerRef.current) {
-          observer.observe(containerRef.current);
-        }
-
-        return () => observer.disconnect();
-      }, []);
-
       return (
         <Box
-          ref={containerRef}
-          w={size.width}
-          h={size.height}
+          w={'full'}
+          h={'full'}
           bg="gray.50"
           overflow="hidden"
           border="1px solid"
           borderColor="redesignBorderPrimary"
-          resize="both" // Makes this container resizable
+          // resize="both" // Makes this container resizable
           // style={{ maxWidth: '100%' }} // Makes this container resizable
+          className='not-story-book-root'
         >
           <Stack p={10} gap={2}>
-            <Text fontSize="sm" color="gray.600">
-              Size: {size.width}px × {size.height}px
-            </Text>
-            <Story />
+            <Story w='full'/>
           </Stack>
         </Box>
       );
