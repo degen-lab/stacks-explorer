@@ -37,7 +37,7 @@ export function ScrollIndicatorWrapper({ children, ...rest }: BoxProps & { child
   }, []);
 
   return (
-    <Box position="relative" className='scroll-indicator-positioner'>
+    <Box position="relative" className="scroll-indicator-positioner">
       <Box
         ref={divRef}
         overflowX={'auto'}

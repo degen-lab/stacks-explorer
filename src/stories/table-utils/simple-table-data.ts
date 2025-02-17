@@ -1,4 +1,4 @@
-import { SimpleTableData } from "./simple-table-utils";
+import { SimpleTableData } from './simple-table-utils';
 
 export const simpleTableRowData: SimpleTableData[] = [
   {

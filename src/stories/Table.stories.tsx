@@ -161,10 +161,10 @@ const meta: Meta<TableStoryArgs> = {
           borderColor="redesignBorderPrimary"
           // resize="both" // Makes this container resizable
           // style={{ maxWidth: '100%' }} // Makes this container resizable
-          className='not-story-book-root'
+          className="not-story-book-root"
         >
           <Stack p={10} gap={2}>
-            <Story w='full'/>
+            <Story w="full" />
           </Stack>
         </Box>
       );

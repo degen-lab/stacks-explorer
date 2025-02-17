@@ -69,7 +69,7 @@ export function TableContainer({
         p={[3, 3, 3, 4]}
         borderColor="red"
         className="table-container-card"
-         overflow='auto'
+        overflow="auto"
         {...rest}
       >
         {children}
