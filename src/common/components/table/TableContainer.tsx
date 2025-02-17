@@ -67,7 +67,7 @@ export function TableContainer({
         h="fit-content"
         w="full"
         p={[3, 3, 3, 4]}
-        borderColor="red"
+        borderColor="redesignBorderSecondary"
         className="table-container-card"
         overflow="auto"
         {...rest}
