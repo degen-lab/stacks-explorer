@@ -11,6 +11,7 @@ import { CONNECT_AUTH_ORIGIN } from '../../../common/constants/env';
 import { useRandomName } from '../../../common/hooks/useRandomName';
 import { useStacksNetwork } from '../../../common/hooks/useStacksNetwork';
 import { useAppDispatch, useAppSelector } from '../../../common/state/hooks';
+import { getWalletProvider } from '../../../common/utils/utils';
 import { InputGroup } from '../../../components/ui/input-group';
 import { IconButton } from '../../../ui/IconButton';
 import { Input } from '../../../ui/Input';
@@ -24,24 +25,29 @@ import { selectCodeBody, setUserData, toggleCodeToolbar } from '../sandbox-slice
 export function LeftSection() {
   const dispatch = useAppDispatch();
   const randomName = useRandomName();
-  const { isConnected, connect } = useUser();
+  const { isConnected, connect, stxAddress } = useUser();
   const network = useStacksNetwork();
   const [contractName, setContractName] = useState(randomName());
   const codeBody = useAppSelector(selectCodeBody);
   const queryClient = useQueryClient();
 
+  const walletProvider = stxAddress ? getWalletProvider(stxAddress) : undefined;
+
   const onDeploy = useCallback(() => {
-    void openContractDeploy({
-      network,
-      postConditionMode: 0x01,
-      codeBody,
-      contractName,
-      authOrigin: CONNECT_AUTH_ORIGIN,
-      onFinish: () => {
-        void queryClient.invalidateQueries({ queryKey: ['addressMempoolTxsInfinite'] });
+    void openContractDeploy(
+      {
+        network,
+        postConditionMode: 0x01,
+        codeBody,
+        contractName,
+        authOrigin: CONNECT_AUTH_ORIGIN,
+        onFinish: () => {
+          void queryClient.invalidateQueries({ queryKey: ['addressMempoolTxsInfinite'] });
+        },
       },
-    });
-  }, [codeBody, contractName, network, queryClient]);
+      window[walletProvider as keyof Window]
+    );
+  }, [codeBody, contractName, network, queryClient, walletProvider]);
   return (
     <>
       <Title mb="32px" fontSize="24px">

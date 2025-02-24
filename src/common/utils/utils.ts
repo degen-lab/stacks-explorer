@@ -385,3 +385,18 @@ export function promiseWrapper<T, Args extends any[]>(
     });
   };
 }
+
+export function getWalletProvider(address: string) {
+  const blockStackData = JSON.parse(
+    window.localStorage.getItem("blockstack-session") || "",
+  );
+  const leatherProvider =
+    blockStackData.userData.profile.walletProvider === "leather";
+  if (address.slice(0, 2) === "SM" || address.slice(0, 2) === "SN") {
+    return "AsignaProvider";
+  } else if (leatherProvider) {
+    return "LeatherProvider";
+  } else {
+    return "XverseProviders.StacksProvider";
+  }
+};

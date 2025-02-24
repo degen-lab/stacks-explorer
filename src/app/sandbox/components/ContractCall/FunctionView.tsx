@@ -1,5 +1,6 @@
 'use client';
 
+import { getWalletProvider } from '@/common/utils/utils';
 import { Box, Flex, Icon, Stack } from '@chakra-ui/react';
 import { Info } from '@phosphor-icons/react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -26,6 +27,7 @@ import { Switch } from '../../../../components/ui/switch';
 import { Button } from '../../../../ui/Button';
 import { Text } from '../../../../ui/Text';
 import { Tooltip } from '../../../../ui/Tooltip';
+import { useUser } from '../../hooks/useUser';
 import { ListValueType, NonTupleValueType, TupleValueType, ValueType } from '../../types/values';
 import { encodeOptional, encodeOptionalTuple, encodeTuple, getTuple } from '../../utils';
 import { Argument } from '../Argument';
@@ -67,8 +69,10 @@ export type FunctionFormikState = FormType & PostConditionParameters;
 export const FunctionView: FC<FunctionViewProps> = ({ fn, contractId, cancelButton }) => {
   const [readOnlyValue, setReadonlyValue] = useState<ClarityValue[]>();
   const network = useStacksNetwork();
+  const { stxAddress } = useUser();
   const queryClient = useQueryClient();
   const isReadOnly = fn.access === 'read_only';
+  const walletProvider = stxAddress ? getWalletProvider(stxAddress) : undefined;
 
   const initialPostConditionParameterValues: PostConditionParameters = {
     postConditionMode: isReadOnly ? PostConditionMode.Allow : PostConditionMode.Deny,
@@ -193,30 +197,33 @@ export const FunctionView: FC<FunctionViewProps> = ({ fn, contractId, cancelButt
         } = values;
 
         if (fn.access === 'public') {
-          void openContractCall({
-            contractAddress: contractId.split('.')[0],
-            contractName: contractId.split('.')[1],
-            functionName: encodeURIComponent(fn.name),
-            functionArgs: Object.values(final),
-            network,
-            authOrigin: CONNECT_AUTH_ORIGIN,
-            onFinish: () => {
-              void queryClient.invalidateQueries({ queryKey: ['addressMempoolTxsInfinite'] });
+          void openContractCall(
+            {
+              contractAddress: contractId.split('.')[0],
+              contractName: contractId.split('.')[1],
+              functionName: encodeURIComponent(fn.name),
+              functionArgs: Object.values(final),
+              network,
+              authOrigin: CONNECT_AUTH_ORIGIN,
+              onFinish: () => {
+                void queryClient.invalidateQueries({ queryKey: ['addressMempoolTxsInfinite'] });
+              },
+              postConditions:
+                values.postConditionMode === PostConditionMode.Allow
+                  ? undefined
+                  : getPostCondition({
+                      postConditionType,
+                      postConditionAddress,
+                      postConditionConditionCode,
+                      postConditionAmount,
+                      postConditionAssetAddress,
+                      postConditionAssetContractName,
+                      postConditionAssetName,
+                    }),
+              postConditionMode,
             },
-            postConditions:
-              values.postConditionMode === PostConditionMode.Allow
-                ? undefined
-                : getPostCondition({
-                    postConditionType,
-                    postConditionAddress,
-                    postConditionConditionCode,
-                    postConditionAmount,
-                    postConditionAssetAddress,
-                    postConditionAssetContractName,
-                    postConditionAssetName,
-                  }),
-            postConditionMode,
-          });
+            window[walletProvider as keyof Window]
+          );
         } else {
           setReadonlyValue(Object.values(final));
         }

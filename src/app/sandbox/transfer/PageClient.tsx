@@ -11,7 +11,12 @@ import { Badge } from '../../../common/components/Badge';
 import { CONNECT_AUTH_ORIGIN } from '../../../common/constants/env';
 import { useStacksNetwork } from '../../../common/hooks/useStacksNetwork';
 import { useFeeTransfer } from '../../../common/queries/useFeeTransfer';
-import { microToStacks, stacksToMicro, validateStacksAddress } from '../../../common/utils/utils';
+import {
+  getWalletProvider,
+  microToStacks,
+  stacksToMicro,
+  validateStacksAddress,
+} from '../../../common/utils/utils';
 import { Button } from '../../../ui/Button';
 import { Input } from '../../../ui/Input';
 import { Text } from '../../../ui/Text';
@@ -23,6 +28,8 @@ const PageClient: NextPage = () => {
   const network = useStacksNetwork();
   const { isConnected, balance, stxAddress } = useUser();
   const fee = feeData ? new BigNumber(feeData as any).multipliedBy(180) : 0;
+
+  const walletProvider = stxAddress ? getWalletProvider(stxAddress) : undefined;
 
   return (
     <Formik
@@ -51,13 +58,16 @@ const PageClient: NextPage = () => {
         return _errors;
       }}
       onSubmit={({ recipient, amount, memo }) => {
-        void openSTXTransfer({
-          network,
-          recipient,
-          amount: stacksToMicro(amount || 0).toString(),
-          memo,
-          authOrigin: CONNECT_AUTH_ORIGIN,
-        });
+        void openSTXTransfer(
+          {
+            network,
+            recipient,
+            amount: stacksToMicro(amount || 0).toString(),
+            memo,
+            authOrigin: CONNECT_AUTH_ORIGIN,
+          },
+          window[walletProvider as keyof Window]
+        );
       }}
       render={({ handleChange, handleBlur, values, errors, setFieldValue }) => (
         <Grid gridTemplateColumns="760px" flexGrow={1} flexShrink={1}>
